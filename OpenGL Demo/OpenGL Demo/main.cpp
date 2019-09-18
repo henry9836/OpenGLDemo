@@ -1,18 +1,13 @@
-#include <glew.h>
-#include <freeglut.h>
-#include <SOIL.h>
-#include <fmod.hpp>
-#include <iostream>
-#include <time.h>
-#include <vector>
-#include <windows.h>
-#include <cstdlib>
-
+#include "Graphics.h"
+#include "ConsoleController.h"
 
 using namespace std;
 
-int main() {
+int main(int argc, char** argv) {
 
+	Console_Initalize();
+
+	Initalize(argc, argv);
 
 	return 0;
 }
