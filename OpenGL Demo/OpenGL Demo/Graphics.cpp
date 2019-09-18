@@ -3,6 +3,15 @@
 WindowInfo windowInfo;
 
 void Render() {
+	//skybox here
+
+	//scissor test
+	glEnable(GL_SCISSOR_TEST);
+	glScissor(0, 100, 1280, 510); //void glScissor(GLint x, GLint y, GLsizei width, GLsizei height)
+
+	//render objects
+
+	glDisable(GL_SCISSOR_TEST);
 
 }
 
@@ -18,6 +27,8 @@ void Initalize(int argc, char** argv) {
 	glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA | GLUT_STENCIL | GLUT_MULTISAMPLE);
 	glutSetOption(GLUT_MULTISAMPLE, 16); 
 	glEnable(GL_MULTISAMPLE);
+
+	
 	glutInitWindowPosition(50, 50);
 
 	glutInitWindowSize(static_cast<int>(windowInfo.screenSize.x), static_cast<int>(windowInfo.screenSize.y));
