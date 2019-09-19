@@ -90,7 +90,7 @@ private:
 		if (!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) // if is Not Zero
 		{
 			std::string log = importer.GetErrorString();
-			Console_OutputLog(to_wstring("ERROR::ASSIMP:: " + log), LOGWARN);
+			Console_OutputLog(to_wstring("ASSIMP: " + log), LOGWARN);
 			return;
 		}
 		// Retrieve the directory path of the filepath

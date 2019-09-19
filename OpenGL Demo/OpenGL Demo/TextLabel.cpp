@@ -23,7 +23,7 @@ TextLabel::TextLabel(ScreenInfo& m_screen, std::string m_Text, std::string newFo
 	GLfloat halfHeight = (m_screen.SCR_HEIGHT  * 0.5f);
 
 	proj = glm::ortho(-halfWidth, halfWidth, -halfHeight, halfHeight);
-	program = ShaderLoader::CreateProgram("Resources/Text.vs", "Resources/Text.fs");
+	program = ShaderLoader::CreateProgram("Resources/Shaders/Text.vs", "Resources/Shaders/Text.fs");
 
 	FT_Library ft;
 	FT_Face face;
@@ -34,13 +34,13 @@ TextLabel::TextLabel(ScreenInfo& m_screen, std::string m_Text, std::string newFo
 
 	if (FT_Init_FreeType(&ft) != 0)
 	{
-		Console_OutputLog(L"ERROR::FREETYPE: Could not init FreeType Library", LOGWARN);
+		Console_OutputLog(L"FREETYPE: Could not init FreeType Library", LOGWARN);
 		return;
 	}
 
 	if (FT_New_Face(ft, newFont.c_str(), 0, &face) != 0)
 	{
-		Console_OutputLog(L"ERROR::FREETYPE: Failed to Load font", LOGWARN);
+		Console_OutputLog(L"FREETYPE: Failed to Load font", LOGWARN);
 		return;
 	}
 	FT_Set_Pixel_Sizes(face, 0, 48);
@@ -49,7 +49,7 @@ TextLabel::TextLabel(ScreenInfo& m_screen, std::string m_Text, std::string newFo
 	{
 		if (FT_Load_Char(face, character, FT_LOAD_RENDER))
 		{
-			Console_OutputLog(L"ERROR::FREETYPE: Failed to load Glyph", LOGWARN);
+			Console_OutputLog(L"FREETYPE: Failed to load Glyph", LOGWARN);
 			continue;
 		}
 

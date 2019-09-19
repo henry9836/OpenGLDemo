@@ -89,6 +89,8 @@ public:
 		glUniformMatrix4fv(lightModel, 1, GL_FALSE, glm::value_ptr(model));
 		// EDIT END
 
+		glEnable(GL_CULL_FACE);
+
 		// Draw mesh
 		glBindVertexArray(this->VAO);
 		glDrawElements(GL_TRIANGLES, this->indices.size(), GL_UNSIGNED_INT, 0);
@@ -99,6 +101,8 @@ public:
 			glActiveTexture(GL_TEXTURE0 + i);
 			glBindTexture(GL_TEXTURE_2D, 0);
 		}
+
+		glDisable(GL_CULL_FACE);
 	}
 
 private:

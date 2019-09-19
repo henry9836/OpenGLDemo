@@ -143,7 +143,7 @@ public:
 
 		//Create program
 
-		this->program = ShaderLoader::CreateProgram("Resources/CubeMap.vs", "Resources/CubeMap.fs");
+		this->program = ShaderLoader::CreateProgram("Resources/Shaders/CubeMap.vs", "Resources/Shaders/CubeMap.fs");
 
 		int width, height;
 		unsigned char* image;
@@ -243,8 +243,8 @@ public:
 
 	int m_size = 0;
 
-	void Initalise(glm::vec3 _position, glm::vec3 _scale, std::string textureFilePath, std::string vShaderFilePath, std::string fShaderFilePath, GLuint Indices[], GLfloat Verts[], std::string _name, int _size, bool _reflective);
-	void Render(Camera* cam, CubeMap _skyBox);
+	void Initalise(glm::vec3 _position, glm::vec3 _scale, std::string textureFilePath, std::string vShaderFilePath, std::string fShaderFilePath, GLuint Indices[], GLfloat Verts[], std::string _name, bool _reflective);
+	void Render(Camera* cam, CubeMap* _skyBox, GLuint Indices[]);
 
 };
 

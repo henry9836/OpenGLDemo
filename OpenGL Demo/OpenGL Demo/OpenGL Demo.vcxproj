@@ -155,7 +155,6 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ObjectManager.cpp" />
     <ClCompile Include="ShaderLoader.cpp" />
-    <ClCompile Include="Sphere.cpp" />
     <ClCompile Include="Sprite.cpp" />
     <ClCompile Include="TextLabel.cpp" />
     <ClCompile Include="TextureLoader.cpp" />
@@ -174,7 +173,6 @@
     <ClInclude Include="ObjectManager.h" />
     <ClInclude Include="ScreenInfo.h" />
     <ClInclude Include="ShaderLoader.h" />
-    <ClInclude Include="Sphere.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="TextLabel.h" />
     <ClInclude Include="TextureLoader.h" />

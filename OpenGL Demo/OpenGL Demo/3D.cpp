@@ -3,14 +3,14 @@
 LoadTexture TextureLoader;
 Input PlayerInput;
 
-void Simple3DObject::Initalise(glm::vec3 _position, glm::vec3 _scale, std::string textureFilePath, std::string vShaderFilePath, std::string fShaderFilePath, GLuint Indices[], GLfloat Verts[], std::string _name, int _size, bool _reflective)
+void Simple3DObject::Initalise(glm::vec3 _position, glm::vec3 _scale, std::string textureFilePath, std::string vShaderFilePath, std::string fShaderFilePath, GLuint Indices[], GLfloat Verts[], std::string _name, bool _reflective)
 {
 	Console_OutputLog(to_wstring("Initalising Basic 3D: " + _name), LOGINFO);
 
 	position = _position;
 	scale = _scale;
 	name = _name;
-	m_size = _size;
+	m_size = sizeof(Indices);
 	reflective = _reflective;
 
 	program = ShaderLoader::CreateProgram(vShaderFilePath.c_str(), fShaderFilePath.c_str());
@@ -42,7 +42,7 @@ void Simple3DObject::Initalise(glm::vec3 _position, glm::vec3 _scale, std::strin
 
 }
 
-void Simple3DObject::Render(Camera* cam, CubeMap _skyBox)
+void Simple3DObject::Render(Camera* cam, CubeMap* _skyBox, GLuint Indices[])
 {
 
 	glUseProgram(program);
@@ -69,16 +69,20 @@ void Simple3DObject::Render(Camera* cam, CubeMap _skyBox)
 	if (reflective) {
 		glActiveTexture(GL_TEXTURE1); 
 		glUniform1i(glGetUniformLocation(program, "skybox"), 1); 
-		glBindTexture(GL_TEXTURE_CUBE_MAP, _skyBox.texID);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, _skyBox->texID);
 	}
+
+	glEnable(GL_CULL_FACE);
 
 	glBindVertexArray(VAO);
 
 	glBindTexture(GL_TEXTURE_2D, program);
 
-	glDrawElements(GL_TRIANGLES, m_size, GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, sizeof(Indices), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 	glUseProgram(0);
+
+	glDisable(GL_CULL_FACE);
 }
 
 Bullet::Bullet(Model* mObject, float deltaTime)
