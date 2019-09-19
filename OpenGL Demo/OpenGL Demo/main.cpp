@@ -131,7 +131,7 @@ GLfloat backVerts[] = {
 //Render function displays everything on the screen
 void Render() {
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
-
+	
 	glClearColor(r, g, b, 1.0);
 
 	/* Tick */
@@ -166,6 +166,13 @@ void Render() {
 
 	//glEnable(GL_SCISSOR_TEST);
 	//glScissor((mScreen.SCR_WIDTH / 2) / 1.5, (mScreen.SCR_HEIGHT / 2) / 2, mScreen.SCR_HEIGHT / 2, mScreen.SCR_HEIGHT / 2); //void glScissor(GLint x, GLint y, GLsizei width, GLsizei height)
+
+	/*
+	==============
+	[DEPTH TEST]
+	==============
+	*/
+	glDepthFunc(GL_ALWAYS);
 
 	/*
 	==============
