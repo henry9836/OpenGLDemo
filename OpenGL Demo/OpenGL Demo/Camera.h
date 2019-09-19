@@ -2,11 +2,9 @@
 #include "glm.hpp"
 #include "gtc/matrix_transform.hpp"
 #include "gtc/type_ptr.hpp"
-#include "glm.hpp"
 #include <freeglut.h>
 #include <iostream>
-
-#include "ConsoleController.h"
+#include "ScreenInfo.h"
 
 class Camera
 {
@@ -21,11 +19,10 @@ public:
 		PRESET1
 	};
 	void initializeCamera();
-	void Tick(glm::vec2 m_Screen, float deltaTime);
+	void Tick(ScreenInfo m_Screen, float deltaTime);
 	void SwitchMode(MODE _mode, glm::vec3 _target, glm::vec3 _camPos, glm::vec3 _lookDirFromFollow, GLfloat _radius, GLfloat _height);
 
 	glm::mat4 getMVP(glm::vec3 postion, glm::vec3 scale, glm::mat4 rotationZ);
-	glm::mat4 getVP();
 
 	glm::vec4 camStartPos = glm::vec4(-5, 3, 0, 1);
 	glm::vec3 camPos;
