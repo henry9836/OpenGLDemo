@@ -180,8 +180,8 @@ void Render() {
 	==============
 	*/
 	glEnable(GL_STENCIL_TEST);//enable stencil buffer 
-	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE); //stfail, dpFail, bothPass 
 	glStencilFunc(GL_ALWAYS, 1, 0xFF);//specify condition for stencil pass 
+	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE); //stfail, dpFail, bothPass 
 	glStencilMask(0xFF);//enable writing to stencil buffer
 	
 	cubeModel.Render(&mCam, &cubeMap, indices);
