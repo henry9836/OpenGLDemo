@@ -15,6 +15,7 @@
 
 #include "ConsoleController.h"
 #include "ShaderLoader.h"
+#include "Camera.h"
 
 class WindowInfo {
 public:
@@ -23,27 +24,6 @@ public:
 
 class ExampleCube {
 public:
-	/*const GLfloat vertices[48] = {
-		-1.0f, -1.0f,  1.0f,	1.0f, 1.0f, 1.0f,
-		1.0f, -1.0f,  1.0f,		1.0f, 1.0f, 1.0f,
-		-1.0f,  1.0f,  1.0f,	1.0f, 1.0f, 1.0f,
-		1.0f,  1.0f,  1.0f,		1.0f, 1.0f, 1.0f,
-		-1.0f, -1.0f, -1.0f,	1.0f, 1.0f, 1.0f,
-		1.0f, -1.0f, -1.0f,		1.0f, 1.0f, 1.0f,
-		-1.0f,  1.0f, -1.0f,	1.0f, 1.0f, 1.0f,
-		1.0f,  1.0f, -1.0f,		1.0f, 1.0f, 1.0f,
-	};
-
-	const GLuint indices[14] =
-	{
-		0, 1, 2, 
-		3, 7, 1, 
-		5, 4, 7, 
-		6, 2, 4, 
-		0, 1
-	};*/
-
-	
 
 	GLuint EBO;
 	GLuint VBO;
