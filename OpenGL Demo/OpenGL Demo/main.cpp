@@ -98,6 +98,7 @@ vector<Sprite*> menuSprites;
 vector<Sprite*> gameSprites;
 vector<Model*> menuModels;
 vector<Model*> mainModels;
+vector<Model*> stencilModels;
 
 //Cubemap
 CubeMap cubeMap;
@@ -172,24 +173,13 @@ void Render() {
 	[DEPTH TEST]
 	==============
 	*/
-	glDepthFunc(GL_ALWAYS);
-
-	/*
-	==============
-	[STENCIL TEST]
-	==============
-	*/
-	glEnable(GL_STENCIL_TEST);//enable stencil buffer 
-	glStencilFunc(GL_ALWAYS, 1, 0xFF);//specify condition for stencil pass 
-	glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE); //stfail, dpFail, bothPass 
-	glStencilMask(0xFF);//enable writing to stencil buffer
+	//glDepthFunc(GL_ALWAYS);
 	
 	cubeModel.Render(&mCam, &cubeMap, indices);
 
 	// MAIN MENU SCENE
 
 	if (!m_Game.gameover && m_Game.currentScreen == m_Game.MAIN) {
-
 
 		tankModel.position = glm::vec3(1.0f, 1.0f, 1.0f);
 
@@ -198,11 +188,35 @@ void Render() {
 			menuSprites.at(i)->Render(&mCam, &cubeMap);
 		}
 
+		/*
+		==============
+		[STENCIL TEST]
+		==============
+		*/
+
+		glEnable(GL_STENCIL_TEST);
+		glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+		glStencilFunc(GL_ALWAYS, 1, 0xFF);
+		glStencilMask(0xFF);
+
 		for (size_t i = 0; i < mainModels.size(); i++)
 		{
 			mainModels.at(i)->Render();
 		}
 
+		glStencilMask(0x00);
+		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+
+		for (size_t i = 0; i < stencilModels.size(); i++)
+		{
+			stencilModels.at(i)->Render();
+		}
+
+		glDisable(GL_STENCIL_TEST);
+		glStencilMask(0xFF);
+		glClear(GL_STENCIL_BUFFER_BIT);
+
+		
 		mCam.SwitchMode(mCam.ORBIT, tankModel.position, glm::vec3(-5.0f, 3.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), 5.0f, 5.0f);
 		mainText.Render();
 		highscoreText.SetText("Current Highscore: " + std::to_string(m_Game.highscore));
@@ -291,6 +305,9 @@ int main(int argc, char** argv) {
 
 		cubeModel.Initalise(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), "Resources/Textures/box.png", "Resources/Shaders/Basic.vs", "Resources/Shaders/Basic.fs", indices, vertices, "Basic Cube", false);
 		mainModels.push_back(new Model("Resources/Models/BasicCube/Cube.obj", &mCam, "Cube", rotationAngle, glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.5f, 0.5f, 0.5f), "Resources/Shaders/3DObjectColor.vs", "Resources/Shaders/3DObjectColor.fs"));
+		stencilModels.push_back(new Model("Resources/Models/BasicCube/Cube.obj", &mCam, "Cube", rotationAngle, glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.5f, 0.5f, 0.5f)*1.1f, "Resources/Shaders/3DObjectColor.vs", "Resources/Shaders/3DObjectColorRed.fs"));
+
+
 		mainModels.push_back(new Model("Resources/Models/Tank/Tank.obj", &mCam, "Tank", rotationAngle, glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), "Resources/Shaders/3DObject_Diffuse.vs", "Resources/Shaders/3DObject_BlinnPhong.fs"));
 
 		/*
