@@ -28,6 +28,14 @@ Input::~Input()
 {
 }
 
+bool Input::CheckKeyDownFirst(int key) {
+	if (KeyState[key] == INPUT_DOWN_FIRST)
+	{
+		return(true);
+	}
+	return(false);
+}
+
 bool Input::CheckKeyDown(int key)
 {
 	if (KeyState[key] == INPUT_DOWN)

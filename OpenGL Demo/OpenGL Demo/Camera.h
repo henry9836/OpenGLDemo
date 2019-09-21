@@ -16,6 +16,7 @@ public:
 		FOLLOW_STATIC,
 		ORTH,
 		PRESPECTIVE,
+		CONTROL,
 		PRESET1
 	};
 	void initializeCamera();
@@ -40,7 +41,7 @@ public:
 	float halfw = 0.0f;
 	float halfh = 0.0f;
 	float maxRenderDistance = 10000.0f;
-	float minRenderDistance = 0.1f;
+	float minRenderDistance = 0.01f;
 	float FOV = 90.0f;
 	float timeElapsed = 0.0f;
 
@@ -52,6 +53,7 @@ public:
 	bool orbitCam = false;
 	bool followCam = true;
 	bool orthoMode = false;
+	bool controllable = false;
 
 	int activeMode = -1;
 

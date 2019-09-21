@@ -9,6 +9,8 @@ class GameManager {
 public:
 	GameManager();
 
+	void CheckGeneralInput(GameManager& m_game, Camera& camera, glm::vec3 orbittar);
+
 	enum Screens {
 		MAIN,
 		GAME,
@@ -19,19 +21,15 @@ public:
 	std::vector<Enemy*>* enemyList;
 	std::vector<AIObject*>* aiList;
 
+	glm::vec3 playerPos = glm::vec3(0,0,0);
+
 	Camera* mCam;
 
-	int score = 0;
-	int wave = 1;
-	int waveSpawnAmount = 10;
-	int lives = 3;
-	int amountSpawned = 0;
-	int highscore = 0;
-	float enemyMoveSpeed = 0.5f;
-	bool waveSpawned = false;
 	bool gameover = false;
+	bool stencil = false;
+	bool scissor = false;
+	bool depth = false;
 	bool leave = false;
 	
-	void CheckGeneralInput(GameManager& m_game);
 };
 

@@ -6,6 +6,7 @@ class Input
 public:
 	Input();
 	~Input();
+	bool CheckKeyDownFirst(int key);
 	bool CheckKeyDown(int key);
 	bool CheckKeyDownS(int key);
 	bool firstDown = true;

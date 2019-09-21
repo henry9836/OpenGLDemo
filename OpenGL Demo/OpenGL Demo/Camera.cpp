@@ -39,14 +39,16 @@ void Camera::Tick(ScreenInfo m_Screen, float deltaTime)
 		}
 	}
 	else {
-		camPos = glm::vec3(camStartPos);
-		camTar = glm::vec3(0.0f, 0.0f, 0.0f);
-		if (followCam) {
-			camTar = glm::vec3(camFollowTar + lookDirFromFollow);
-			if (!staticCam) {
-				camPos.x = camFollowTar.x;
-				camPos.y = camFollowTar.y + height;
-				camPos.z = camFollowTar.z;
+		if (!controllable) {
+			camPos = glm::vec3(camStartPos);
+			camTar = glm::vec3(0.0f, 0.0f, 0.0f);
+			if (followCam) {
+				camTar = glm::vec3(camFollowTar + lookDirFromFollow);
+				if (!staticCam) {
+					camPos.x = camFollowTar.x;
+					camPos.y = camFollowTar.y + height;
+					camPos.z = camFollowTar.z;
+				}
 			}
 		}
 		view = glm::lookAt(camPos, camTar, camUpDir);
@@ -75,6 +77,7 @@ void Camera::SwitchMode(MODE _mode, glm::vec3 _target, glm::vec3 _camPos, glm::v
 		this->staticCam = true;
 		this->orbitCam = true;
 		this->followCam = false;
+		this->controllable = false;
 		this->radius = _radius;
 		this->height = _height;
 		this->camPos = _camPos;
@@ -91,6 +94,7 @@ void Camera::SwitchMode(MODE _mode, glm::vec3 _target, glm::vec3 _camPos, glm::v
 		}
 		this->staticCam = false;
 		this->orbitCam = false;
+		this->controllable = false;
 		this->followCam = true;
 		this->camPos = _camPos;
 		this->camTar = _target;
@@ -116,6 +120,7 @@ void Camera::SwitchMode(MODE _mode, glm::vec3 _target, glm::vec3 _camPos, glm::v
 		this->radius = _radius;
 		this->height = _height;
 		this->activeMode = _mode;
+		this->controllable = false;
 		break;
 	}
 	case Camera::FOLLOW_STATIC:
@@ -125,9 +130,9 @@ void Camera::SwitchMode(MODE _mode, glm::vec3 _target, glm::vec3 _camPos, glm::v
 		}
 		this->staticCam = true;
 		this->orbitCam = false;
+		this->controllable = false;
 		this->followCam = true;
 		this->camPos = _camPos;
-		this->camStartPos = glm::vec4(camPos.x, camPos.y, camPos.z, 1);
 		this->camTar = _target;
 		this->camFollowTar = _target;
 		this->lookDirFromFollow = _lookDirFromFollow;
@@ -136,6 +141,25 @@ void Camera::SwitchMode(MODE _mode, glm::vec3 _target, glm::vec3 _camPos, glm::v
 		this->activeMode = _mode;
 		break;
 	}
+
+	case Camera::CONTROL: {
+		if (_mode != activeMode) {
+			Console_OutputLog(L"Switching Camera Mode To Control", LOGINFO);
+		}
+		this->staticCam = false;
+		this->orbitCam = false;
+		this->controllable = true;
+		this->followCam = false;
+		this->camPos = _camPos;
+		this->camTar = _target;
+		this->camFollowTar = _target;
+		this->lookDirFromFollow = _lookDirFromFollow;
+		this->radius = _radius;
+		this->height = _height;
+		this->activeMode = _mode;
+		break;
+	}
+
 	case Camera::ORTH:
 	{
 		if (_mode != activeMode) {
@@ -145,6 +169,7 @@ void Camera::SwitchMode(MODE _mode, glm::vec3 _target, glm::vec3 _camPos, glm::v
 		this->activeMode = _mode;
 		break;
 	}
+
 	case Camera::PRESPECTIVE:
 	{
 		if (_mode != activeMode) {
@@ -157,7 +182,7 @@ void Camera::SwitchMode(MODE _mode, glm::vec3 _target, glm::vec3 _camPos, glm::v
 	case Camera::PRESET1:
 	{
 		if (_mode != activeMode) {
-			Console_OutputLog(L"Switching Camera Mode To Orbit", LOGINFO);
+			Console_OutputLog(L"Switching Camera Mode To Preset1", LOGINFO);
 		}
 		this->activeMode = _mode;
 		break;

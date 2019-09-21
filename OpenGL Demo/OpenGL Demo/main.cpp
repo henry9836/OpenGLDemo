@@ -116,6 +116,8 @@ float currentTime = 0.0f;
 float deltaTime = 0.0f;
 float pasttime = 0.0f;
 
+bool firstLoop = true;
+
 GLuint backIndices[] = {
 	0, 1, 2,
 	2, 3, 0,
@@ -164,17 +166,22 @@ void Render() {
 	[SCISSOR TEST]
 	==============
 	*/
-
-	//glEnable(GL_SCISSOR_TEST);
-	//glScissor((mScreen.SCR_WIDTH / 2) / 1.5, (mScreen.SCR_HEIGHT / 2) / 2, mScreen.SCR_HEIGHT / 2, mScreen.SCR_HEIGHT / 2); //void glScissor(GLint x, GLint y, GLsizei width, GLsizei height)
-
+	if (m_Game.scissor) {
+		glEnable(GL_SCISSOR_TEST);
+		glScissor((mScreen.SCR_WIDTH / 2) / 1.5, (mScreen.SCR_HEIGHT / 2) / 2, mScreen.SCR_HEIGHT / 2, mScreen.SCR_HEIGHT / 2); //void glScissor(GLint x, GLint y, GLsizei width, GLsizei height)
+	}
 	/*
 	==============
 	[DEPTH TEST]
 	==============
 	*/
-	//glDepthFunc(GL_ALWAYS);
-	
+	if (m_Game.depth) {
+		
+		glDepthFunc(GL_ALWAYS);
+	}
+	else {
+		glDepthFunc(GL_LESS);
+	}
 	cubeModel.Render(&mCam, &cubeMap, indices);
 
 	// MAIN MENU SCENE
@@ -194,33 +201,39 @@ void Render() {
 		==============
 		*/
 
-		glEnable(GL_STENCIL_TEST);
-		glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
-		glStencilFunc(GL_ALWAYS, 1, 0xFF);
-		glStencilMask(0xFF);
+		if (m_Game.stencil) {
+			glEnable(GL_STENCIL_TEST);
+			glStencilOp(GL_KEEP, GL_KEEP, GL_REPLACE);
+			glStencilFunc(GL_ALWAYS, 1, 0xFF);
+			glStencilMask(0xFF);
+		}
 
 		for (size_t i = 0; i < mainModels.size(); i++)
 		{
 			mainModels.at(i)->Render();
 		}
 
-		glStencilMask(0x00);
-		glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
+		if (m_Game.stencil) {
+			glStencilMask(0x00);
+			glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
 
-		for (size_t i = 0; i < stencilModels.size(); i++)
-		{
-			stencilModels.at(i)->Render();
+
+			for (size_t i = 0; i < stencilModels.size(); i++)
+			{
+				stencilModels.at(i)->Render();
+			}
+
+			glDisable(GL_STENCIL_TEST);
+			glStencilMask(0xFF);
+			glClear(GL_STENCIL_BUFFER_BIT);
 		}
 
-		glDisable(GL_STENCIL_TEST);
-		glStencilMask(0xFF);
-		glClear(GL_STENCIL_BUFFER_BIT);
-
+		if (firstLoop) {
+			mCam.SwitchMode(mCam.ORBIT, tankModel.position, glm::vec3(-5.0f, 3.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), 5.0f, 5.0f);
+			firstLoop = false;
+		}
 		
-		mCam.SwitchMode(mCam.ORBIT, tankModel.position, glm::vec3(-5.0f, 3.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), 5.0f, 5.0f);
 		mainText.Render();
-		highscoreText.SetText("Current Highscore: " + std::to_string(m_Game.highscore));
-		highscoreText.Render();
 	}
 	glStencilMask(0x00);
 	glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
@@ -240,7 +253,7 @@ void Update() {
 	
 	glutPostRedisplay();
 	mAudio.Tick(); //Update Audio
-	m_Game.CheckGeneralInput(m_Game); //Get Current Keyboard Input State
+	m_Game.CheckGeneralInput(m_Game, mCam, tankModel.position); //Get Current Keyboard Input State
 	if (m_Game.leave) { //Quit Game
 		glutLeaveMainLoop();
 	}
@@ -253,7 +266,6 @@ int main(int argc, char** argv) {
 
 		Console_OutputLog(L"Initializing Game...", LOGINFO);
 
-		m_Game.score = 0;
 		m_Game.gameover = false;
 
 		//glut init
@@ -381,18 +393,16 @@ int main(int argc, char** argv) {
 			[ TEXT ]
 			========
 		*/
-		//mScore = TextLabel(mScreen, "SCORE: 0", "Resources/Fonts/DIN1451.ttf", glm::vec2(-850.0f, 400.0f));
-		//mLivesText = TextLabel(mScreen, "LIVES: 3", "Resources/Fonts/DIN1451.ttf", glm::vec2(-850.0f, 450.0f));
-		//mWaveNum = TextLabel(mScreen, "WAVE: 1", "Resources/Fonts/DIN1451.ttf", glm::vec2(-850.0f, 350.0f));
-		//gameOverText = TextLabel(mScreen, "GAMEOVER\nSCORE: UNKNOWN\nPress c to continue", "Resources/Fonts/DIN1451.ttf", glm::vec2(-300.0f, 450.0f));
-		//mainText = TextLabel(mScreen, "The Dev Forgot To Name Me\n1. Play\n2. Quit", "Resources/Fonts/Arial.ttf", glm::vec2(-850.0f, 450.0f));
-		//highscoreText = TextLabel(mScreen, "Current Highscore: " + std::to_string(m_Game.highscore) , "Resources/Fonts/Arial.ttf", glm::vec2(-850.0f, -450.0f));
-		//mScore.SetScale(static_cast<GLfloat>(1.0));
-		//mLivesText.SetScale(static_cast<GLfloat>(1.0));
-		//mWaveNum.SetScale(static_cast<GLfloat>(1.0));
-		//gameOverText.SetScale(static_cast<GLfloat>(1.0));
-		//mainText.SetScale(static_cast<GLfloat>(1.0));
-		//highscoreText.SetScale(static_cast<GLfloat>(1.0));
+		mScore = TextLabel(mScreen, "SCORE: 0", "Resources/Fonts/DIN1451.ttf", glm::vec2(-850.0f, 400.0f));
+		mLivesText = TextLabel(mScreen, "LIVES: 3", "Resources/Fonts/DIN1451.ttf", glm::vec2(-850.0f, 450.0f));
+		mWaveNum = TextLabel(mScreen, "WAVE: 1", "Resources/Fonts/DIN1451.ttf", glm::vec2(-850.0f, 350.0f));
+		gameOverText = TextLabel(mScreen, "GAMEOVER\nSCORE: UNKNOWN\nPress c to continue", "Resources/Fonts/DIN1451.ttf", glm::vec2(-300.0f, 450.0f));
+		mainText = TextLabel(mScreen, "The Dev Forgot To Name Me\n1. Play\n2. Quit", "Resources/Fonts/Arial.ttf", glm::vec2(-850.0f, 450.0f));
+		mScore.SetScale(static_cast<GLfloat>(1.0));
+		mLivesText.SetScale(static_cast<GLfloat>(1.0));
+		mWaveNum.SetScale(static_cast<GLfloat>(1.0));
+		gameOverText.SetScale(static_cast<GLfloat>(1.0));
+		mainText.SetScale(static_cast<GLfloat>(1.0)); 
 
 		//Addition Items To Set Up
 
