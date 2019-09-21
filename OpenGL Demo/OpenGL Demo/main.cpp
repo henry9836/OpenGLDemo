@@ -393,15 +393,7 @@ int main(int argc, char** argv) {
 			[ TEXT ]
 			========
 		*/
-		mScore = TextLabel(mScreen, "SCORE: 0", "Resources/Fonts/DIN1451.ttf", glm::vec2(-850.0f, 400.0f));
-		mLivesText = TextLabel(mScreen, "LIVES: 3", "Resources/Fonts/DIN1451.ttf", glm::vec2(-850.0f, 450.0f));
-		mWaveNum = TextLabel(mScreen, "WAVE: 1", "Resources/Fonts/DIN1451.ttf", glm::vec2(-850.0f, 350.0f));
-		gameOverText = TextLabel(mScreen, "GAMEOVER\nSCORE: UNKNOWN\nPress c to continue", "Resources/Fonts/DIN1451.ttf", glm::vec2(-300.0f, 450.0f));
-		mainText = TextLabel(mScreen, "The Dev Forgot To Name Me\n1. Play\n2. Quit", "Resources/Fonts/Arial.ttf", glm::vec2(-850.0f, 450.0f));
-		mScore.SetScale(static_cast<GLfloat>(1.0));
-		mLivesText.SetScale(static_cast<GLfloat>(1.0));
-		mWaveNum.SetScale(static_cast<GLfloat>(1.0));
-		gameOverText.SetScale(static_cast<GLfloat>(1.0));
+		mainText = TextLabel(mScreen, "OpenGL Demo\n (Enable/Disable)\n 1/2 Stencil Test\n q/w Scissor Test\n a/s Depth Test", "Resources/Fonts/TerminusTTF-4.47.0.ttf", glm::vec2(-850.0f, 450.0f));
 		mainText.SetScale(static_cast<GLfloat>(1.0)); 
 
 		//Addition Items To Set Up
