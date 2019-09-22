@@ -25,6 +25,7 @@ void GameManager::CheckGeneralInput(GameManager& m_game, Camera& camera, glm::ve
 			scissor = false;
 			depth = false;
 			leave = false;
+			caminManual = false;
 
 			mCam->SwitchMode(Camera::ORBIT, orbittar, glm::vec3(-5.0f, 3.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), 5.0f, 5.0f);
 		}
@@ -65,9 +66,11 @@ void GameManager::CheckGeneralInput(GameManager& m_game, Camera& camera, glm::ve
 		}
 		else if (m_Input.CheckKeyDown('o')) { //orbit mode
 			mCam->SwitchMode(Camera::ORBIT, orbittar, glm::vec3(-5.0f, 3.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), 5.0f, 5.0f);
+			caminManual = false;
 		}
 		else if (m_Input.CheckKeyDown('m')) { //manual mode
 			mCam->SwitchMode(Camera::CONTROL, (mCam->camPos += glm::vec3(1.0f, 0.0f, 0.0f)), glm::vec3(-5.0f, 3.0f, 0.0f), mCam->lookDirFromFollow, 1, 1);
+			caminManual = true;
 		}
 		if (m_Input.CheckKeyDown('y')) { //go forward
 			mCam->camPos += glm::vec3(1.0f, 0.0f, 0.0f);

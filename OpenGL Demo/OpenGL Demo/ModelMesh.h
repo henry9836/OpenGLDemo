@@ -72,7 +72,6 @@ public:
 			glBindTexture(GL_TEXTURE_2D, this->textures[i].id);
 		}
 		
-		// EDIT
 		glm::mat4 model;
 		glm::mat4 translationMatrix = glm::translate(glm::mat4(), position);
 		glm::mat4 rotationZ = glm::rotate(glm::mat4(), glm::radians(rotationAngle), rotationAxisZ);
@@ -87,9 +86,8 @@ public:
 		glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(projCalc));
 		GLint lightModel = glGetUniformLocation(program, "model");
 		glUniformMatrix4fv(lightModel, 1, GL_FALSE, glm::value_ptr(model));
-		// EDIT END
 
-		glEnable(GL_CULL_FACE);
+		//glEnable(GL_CULL_FACE);
 
 		// Draw mesh
 		glBindVertexArray(this->VAO);
@@ -102,7 +100,7 @@ public:
 			glBindTexture(GL_TEXTURE_2D, 0);
 		}
 
-		glDisable(GL_CULL_FACE);
+		//glDisable(GL_CULL_FACE);
 	}
 
 private:

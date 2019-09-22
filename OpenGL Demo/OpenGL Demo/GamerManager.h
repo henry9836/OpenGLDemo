@@ -30,6 +30,7 @@ public:
 	bool scissor = false;
 	bool depth = false;
 	bool leave = false;
+	bool caminManual = false;
 	
 };
 
