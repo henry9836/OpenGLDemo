@@ -78,6 +78,7 @@ public:
 		glm::mat4 scaleMatrix = glm::scale(glm::mat4(), scale);
 		model = translationMatrix * rotationZ * scaleMatrix;
 		glm::mat4 mvp = camera->proj * camera->view * glm::scale(glm::mat4(), scale);
+		glm::vec3 camPos = camera->camPos;
 
 		//POSITION AND SCALE
 		glm::mat4 projCalc = camera->proj * camera->view * model;
@@ -86,7 +87,9 @@ public:
 		glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(projCalc));
 		GLint lightModel = glGetUniformLocation(program, "model");
 		glUniformMatrix4fv(lightModel, 1, GL_FALSE, glm::value_ptr(model));
-
+		//GLint camPosShade = glGetUniformLocation(program, "camPos");
+		//glUniform3fv(camPosShade, 1, glm::value_ptr(camPos));
+		glUniform3f(glGetUniformLocation(program, "camPos"), camera->camPos.x, camera->camPos.y, camera->camPos.z);
 		//glEnable(GL_CULL_FACE);
 
 		// Draw mesh
