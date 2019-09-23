@@ -31,6 +31,7 @@ public:
 	bool depth = false;
 	bool leave = false;
 	bool caminManual = false;
+	bool wireFrame = false;
 	
 };
 

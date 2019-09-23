@@ -159,6 +159,19 @@ void Render() {
 	
 	/*
 	==============
+	[WIREFRAME TEST]
+	==============
+	*/
+
+	if (m_Game.wireFrame) {
+		glPolygonMode(GL_FRONT, GL_LINE);
+	}
+	else {
+		glPolygonMode(GL_FRONT, GL_FILL);
+	}
+
+	/*
+	==============
 	[SCISSOR TEST]
 	==============
 	*/
@@ -288,9 +301,9 @@ int main(int argc, char** argv) {
 		glEnable(GL_MULTISAMPLE);
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_LESS);
+		glEnable(GL_CULL_FACE);
 		glFrontFace(GL_CCW);
 		glCullFace(GL_BACK);
-		glEnable(GL_CULL_FACE);
 
 		glClearColor(1.0, 0.0, 0.0, 1.0);
 		
@@ -396,9 +409,9 @@ int main(int argc, char** argv) {
 			========
 		*/
 
-		mainTextBack = TextLabel(mScreen, "OpenGL Demo\n (Enable/Disable)\n 1/2 Stencil Test\n q/w Scissor Test\n a/s Depth Test\n m/o Manual/Orbit Camera Mode\n r - Reset Demo\n esc - Quit Demo", "Resources/Fonts/TerminusTTF-4.47.0.ttf", glm::vec2(-850.0f, 450.0f));
+		mainTextBack = TextLabel(mScreen, "OpenGL Demo\n (Enable/Disable)\n 1/2 Stencil Test\n q/w Scissor Test\n a/s Depth Test\n m/o Manual/Orbit Camera Mode\n z/x Wireframe \n r - Reset Demo\n esc - Quit Demo", "Resources/Fonts/TerminusTTF-4.47.0.ttf", glm::vec2(-850.0f, 450.0f));
 		camControlTextBack = TextLabel(mScreen, "Camera Controls\n y - Forwards\n h - Backwards\n g - Left\n j - Right", "Resources/Fonts/TerminusTTF-4.47.0.ttf", glm::vec2(500.0f, 450.0f));
-		mainText = TextLabel(mScreen, "OpenGL Demo\n (Enable/Disable)\n 1/2 Stencil Test\n q/w Scissor Test\n a/s Depth Test\n m/o Manual/Orbit Camera Mode\n r - Reset Demo\n esc - Quit Demo", "Resources/Fonts/TerminusTTF-4.47.0.ttf", glm::vec2(-850.0f, 450.0f));
+		mainText = TextLabel(mScreen, "OpenGL Demo\n (Enable/Disable)\n 1/2 Stencil Test\n q/w Scissor Test\n a/s Depth Test\n m/o Manual/Orbit Camera Mode\n z/x Wireframe\n r - Reset Demo\n esc - Quit Demo", "Resources/Fonts/TerminusTTF-4.47.0.ttf", glm::vec2(-850.0f, 450.0f));
 		camControlText = TextLabel(mScreen, "Camera Controls\n y - Forwards\n h - Backwards\n g - Left\n j - Right", "Resources/Fonts/TerminusTTF-4.47.0.ttf", glm::vec2(500.0f, 450.0f));
 		mainText.SetScale(static_cast<GLfloat>(1.0)); 
 		camControlText.SetScale(static_cast<GLfloat>(1.0));

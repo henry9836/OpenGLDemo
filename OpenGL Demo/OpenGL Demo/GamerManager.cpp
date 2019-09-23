@@ -26,6 +26,7 @@ void GameManager::CheckGeneralInput(GameManager& m_game, Camera& camera, glm::ve
 			depth = false;
 			leave = false;
 			caminManual = false;
+			wireFrame = false;
 
 			mCam->SwitchMode(Camera::ORBIT, orbittar, glm::vec3(-5.0f, 3.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), 5.0f, 5.0f);
 		}
@@ -63,6 +64,16 @@ void GameManager::CheckGeneralInput(GameManager& m_game, Camera& camera, glm::ve
 			Console_OutputLog(L"Depth Test [OFF]", LOGINFO);
 
 			depth = false;
+		}
+		else if (m_Input.CheckKeyDown('z')) { //wireframe
+			Console_OutputLog(L"Wireframe Test [ON]", LOGINFO);
+
+			wireFrame = true;
+		}
+		else if (m_Input.CheckKeyDown('x')) { //wireframe
+			Console_OutputLog(L"Wireframe Test [OFF]", LOGINFO);
+
+			wireFrame = false;
 		}
 		else if (m_Input.CheckKeyDown('o')) { //orbit mode
 			mCam->SwitchMode(Camera::ORBIT, orbittar, glm::vec3(-5.0f, 3.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), 5.0f, 5.0f);
