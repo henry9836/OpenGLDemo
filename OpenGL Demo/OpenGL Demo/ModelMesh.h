@@ -23,8 +23,8 @@ struct Vertex {
 };
 
 struct MeshTexture {
-	GLuint id;
-	string type;
+	GLuint id = 0;
+	string type = "";
 	aiString path;
 };
 

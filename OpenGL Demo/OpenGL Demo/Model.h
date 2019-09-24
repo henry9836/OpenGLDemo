@@ -35,7 +35,7 @@ public:
 	GLuint program = NULL;
 	Camera* camera = nullptr;
 
-	float rotationAngle;
+	float rotationAngle = 0;
 	glm::vec3 rotationAxisZ;
 	glm::vec3 position;
 	glm::vec3 scale;

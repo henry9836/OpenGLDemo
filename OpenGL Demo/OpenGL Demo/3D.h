@@ -143,7 +143,7 @@ public:
 
 		//Create program
 
-		this->program = ShaderLoader::CreateProgram("Resources/Shaders/CubeMap.vs", "Resources/Shaders/CubeMap.fs");
+		this->program = ShaderLoader::CreateProgram("Resources/Shaders/CubeMapFog.vs", "Resources/Shaders/CubeMapFog.fs");
 
 		int width, height;
 		unsigned char* image;
@@ -205,7 +205,7 @@ private:
 	glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
 	glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f);
 
-	Camera* camera;
+	Camera* camera = nullptr;
 	vector<std::string> faces;
 	GLuint VAO = NULL;
 	GLuint VBO = NULL;
@@ -222,7 +222,7 @@ public:
 
 	glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
 	glm::vec3 scale = glm::vec3(10.0f, 10.0f, 10.0f);
-	glm::vec3 rotationAxisZ;
+	glm::vec3 rotationAxisZ = glm::vec3(0.0f, 1.0f, 0.0f);
 
 	bool reflective = false;
 
@@ -233,7 +233,7 @@ public:
 	GLuint image = NULL;
 	GLuint program = NULL;
 
-	float rotationAngle;
+	float rotationAngle = 0;
 
 	glm::mat4 model;
 	glm::mat4 projCalc;

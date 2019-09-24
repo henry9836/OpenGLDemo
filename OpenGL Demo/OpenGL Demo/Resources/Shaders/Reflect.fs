@@ -15,6 +15,6 @@ void main()
 	vec3 norm = normalize(fragNormal);
 	vec3 viewDir = normalize(fragPos - camPos);
 	vec3 reflectDir = reflect(viewDir, norm);
-		
-   color = vec4(texture(skybox, reflectDir).rgb, 1.0f);
+	
+	color = vec4(texture(skybox, reflectDir).rgb, 1.0f);
 }

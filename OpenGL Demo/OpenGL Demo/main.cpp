@@ -83,6 +83,7 @@ GLuint indices[] =
 
 //Sprites
 Sprite backdropSprite;
+Sprite waterSprite;
 
 //Models
 Model tankModel;
@@ -155,6 +156,9 @@ void Render() {
 		===========
 	*/
 
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	cubeMap.Render();
 	
 	/*
@@ -177,7 +181,7 @@ void Render() {
 	*/
 	if (m_Game.scissor) {
 		glEnable(GL_SCISSOR_TEST);
-		glScissor((mScreen.SCR_WIDTH / 2) / 1.5, (mScreen.SCR_HEIGHT / 2) / 2, mScreen.SCR_HEIGHT / 2, mScreen.SCR_HEIGHT / 2); //void glScissor(GLint x, GLint y, GLsizei width, GLsizei height)
+		glScissor((GLint)(mScreen.SCR_WIDTH / 2) , (GLint)(mScreen.SCR_HEIGHT / 2) / 2, (GLint)mScreen.SCR_HEIGHT / 2, (GLint)mScreen.SCR_HEIGHT / 2); //void glScissor(GLint x, GLint y, GLsizei width, GLsizei height)
 	}
 	/*
 	==============
@@ -331,12 +335,12 @@ int main(int argc, char** argv) {
 		*/
 
 		cubeModel.Initalise(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), "Resources/Textures/box.png", "Resources/Shaders/Basic.vs", "Resources/Shaders/Basic.fs", indices, vertices, "Basic Cube", false);
-		mainModels.push_back(new Model("Resources/Models/BasicCube/Cube.obj", &mCam, "Cube", rotationAngle, glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.5f, 0.5f, 0.5f), "Resources/Shaders/3DObjectColor.vs", "Resources/Shaders/3DObjectColor.fs"));
-		stencilModels.push_back(new Model("Resources/Models/BasicCube/Cube.obj", &mCam, "[STENCIL] Cube", rotationAngle, glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.5f, 0.5f, 0.5f)*1.1f, "Resources/Shaders/3DObjectColor.vs", "Resources/Shaders/3DObjectColorRed.fs"));
+		mainModels.push_back(new Model("Resources/Models/BasicCube/Cube.obj", &mCam, "Cube", rotationAngle, glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.5f, 0.5f, 0.5f), "Resources/Shaders/3DObjectFog.vs", "Resources/Shaders/3DObjectFog.fs"));
+		stencilModels.push_back(new Model("Resources/Models/BasicCube/Cube.obj", &mCam, "[STENCIL] Cube", rotationAngle, glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), glm::vec3(0.5f, 0.5f, 0.5f)*1.1f, "Resources/Shaders/3DObjectColor.vs", "Resources/Shaders/3DObjectColor.fs"));
 
 		mainModels.push_back(new Model("Resources/Models/BasicCube/Cube.obj", &mCam, "Fog Cube", rotationAngle, glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(10.0f, 1.0f, 1.0f), glm::vec3(0.5f, 0.5f, 0.5f), "Resources/Shaders/3DObjectFog.vs", "Resources/Shaders/3DObjectFog.fs"));
 
-		mainModels.push_back(new Model("Resources/Models/Tank/Tank.obj", &mCam, "Tank", rotationAngle, glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), "Resources/Shaders/3DObject_Diffuse.vs", "Resources/Shaders/3DObject_BlinnPhong.fs"));
+		mainModels.push_back(new Model("Resources/Models/Tank/Tank.obj", &mCam, "Tank", rotationAngle, glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), "Resources/Shaders/3DObjectFog.vs", "Resources/Shaders/3DObjectFog.fs"));
 
 		/*
 			============
@@ -352,7 +356,9 @@ int main(int argc, char** argv) {
 		    ===========
 		*/
 
-		backdropSprite.Initalise(glm::vec3(1.0f, 1.0f, 5.0f), glm::vec3(2.0f, 2.0f, 2.0f), "Resources/Textures/back.png", "Resources/Shaders/Reflect.vs", "Resources/Shaders/Reflect.fs", backIndices, backVerts, "Backround Layer");
+		//backdropSprite.Initalise(glm::vec3(1.0f, 1.0f, 5.0f), glm::vec3(2.0f, 2.0f, 2.0f), "Resources/Textures/back.png", "Resources/Shaders/Reflect.vs", "Resources/Shaders/Reflect.fs", backIndices, backVerts, "Backround Layer");
+		backdropSprite.Initalise(glm::vec3(1.0f, 1.0f, 5.0f), glm::vec3(2.0f, 2.0f, 2.0f), "Resources/Textures/water.png", "Resources/Shaders/BasicShader.vs", "Resources/Shaders/BasicShader.fs", backIndices, backVerts, "Backround Layer");
+		//backdropSprite.Initalise(glm::vec3(1.0f, 1.0f, 5.0f), glm::vec3(2.0f, 2.0f, 2.0f), "Resources/Textures/water.png", "Resources/Shaders/ReflectTexFog.vs", "Resources/Shaders/ReflectTexFog.fs", backIndices, backVerts, "Water Layer");
 
 		menuSprites.push_back(&backdropSprite); //Assign to scene
 
@@ -394,6 +400,52 @@ int main(int argc, char** argv) {
 			8 * sizeof(GLfloat),
 			(GLvoid*)(6 * sizeof(GLfloat)));
 		glEnableVertexAttribArray(2);
+
+
+		//Uncomment below if you want to see some wacky stuff
+		//waterSprite.Initalise(glm::vec3(1.0f, 1.0f, -5.0f), glm::vec3(2.0f, 2.0f, 2.0f), "Resources/Textures/back.png", "Resources/Shaders/Reflect.vs", "Resources/Shaders/Reflect.fs", backIndices, backVerts, "Backround Layer");
+
+		//menuSprites.push_back(&waterSprite); //Assign to scene
+
+
+		//glGenVertexArrays(1, &waterSprite.VAO);
+		//glBindVertexArray(waterSprite.VAO);
+
+		//glGenBuffers(1, &waterSprite.EBO);
+		//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, waterSprite.EBO);
+		//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(backIndices), backIndices, GL_STATIC_DRAW);
+
+		//glGenBuffers(1, &waterSprite.VBO);
+		//glBindBuffer(GL_ARRAY_BUFFER, waterSprite.VBO);
+		//glBufferData(GL_ARRAY_BUFFER, sizeof(backVerts), backVerts, GL_STATIC_DRAW);
+
+		//glVertexAttribPointer(
+		//	0,
+		//	3,
+		//	GL_FLOAT,
+		//	GL_FALSE,
+		//	8 * sizeof(GLfloat),
+		//	(GLvoid*)0);
+		//glEnableVertexAttribArray(0);
+
+		//glVertexAttribPointer(
+		//	1,
+		//	3,
+		//	GL_FLOAT,
+		//	GL_FALSE,
+		//	8 * sizeof(GLfloat),
+		//	(GLvoid*)(3 * sizeof(GLfloat)));
+		//glEnableVertexAttribArray(1);
+
+		//glVertexAttribPointer(
+		//	2,
+		//	2,
+		//	GL_FLOAT,
+		//	GL_FALSE,
+		//	8 * sizeof(GLfloat),
+		//	(GLvoid*)(6 * sizeof(GLfloat)));
+		//glEnableVertexAttribArray(2);
+
 
 		/*
 			==========

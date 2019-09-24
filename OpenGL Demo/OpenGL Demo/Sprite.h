@@ -29,7 +29,7 @@ public:
 	//GLuint image = NULL;
 	GLuint program = NULL;
 private:
-	unsigned char* image;
+	unsigned char* image = nullptr;
 
 	
 
