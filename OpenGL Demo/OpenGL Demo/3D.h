@@ -8,6 +8,7 @@
 #include <gtc/type_ptr.hpp>
 #include <ft2build.h>
 #include FT_FREETYPE_H
+#include <fstream>
 
 #include "Camera.h"
 #include "ShaderLoader.h"
@@ -292,5 +293,123 @@ class Player {
 	~Player();
 
 	void Update(GLfloat deltaTime, glm::vec4 maxWorldSize);
+
+};
+
+class Terrain {
+
+public:
+
+	void Initalise(Camera* _cam, std::string _pathToHeightMap, std::string _name, glm::vec2 _imageSize) {
+		Console_OutputLog(to_wstring("Initalising Terrain: " + _name), LOGINFO);
+
+		this->name = _name;
+		this->camera = _cam;
+		this->imageSize = _imageSize;
+
+		int totalSize = _imageSize.x * _imageSize.y;
+
+		//Create Vertcies and Indices
+
+		vector<unsigned char> rawData(totalSize);
+
+		vector<float> heightInfo(totalSize);
+
+		vector<GLfloat> TerrianVertices;
+
+		vector<GLuint> TerrianIndices;
+
+		//Get Info From Map
+		ifstream heightMap;
+		heightMap.open(_pathToHeightMap.c_str(), std::ios_base::binary);
+		if (heightMap.fail())
+		{
+			Console_OutputLog(L"Could not load height map", LOGWARN);
+			return;
+		}
+		else {
+			heightMap.read((char*)&rawData[0], (std::streamsize)rawData.size());
+		}
+
+		heightMap.close();
+
+		for (UINT i = 0; i < totalSize; ++i)
+		{
+			//heightInfo[i] = (float)rawData[i] * mInfo.HeightScale + mInfo.HeightOffset;
+			heightInfo[i] = (float)rawData[i];
+		}
+
+		//Create Vertices From HeightInfo
+
+		//Create Indices
+
+		//Bind and Generate Info
+
+		glGenVertexArrays(1, &this->VAO);
+		glBindVertexArray(this->VAO);
+
+		glGenBuffers(1, &this->VBO);
+		glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
+		glBufferData(GL_ARRAY_BUFFER, TerrianVertices.size() * sizeof(GLfloat), &TerrianVertices[0], GL_STATIC_DRAW);
+
+		glGenBuffers(1, &this->EBO);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, TerrianIndices.size() * sizeof(GLuint), &TerrianIndices[0], GL_STATIC_DRAW);
+
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+		glEnableVertexAttribArray(0);
+
+		/*glGenTextures(1, &this->texture);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, this->texture);*/
+
+		//Create program
+
+		this->program = ShaderLoader::CreateProgram("Resources/Shaders/3DObjectColor.vs", "Resources/Shaders/3DObjectColor.fs");
+
+		int width, height;
+		unsigned char* image;
+
+		//glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+		//this->texID = this->texture;
+
+		Console_OutputLog(to_wstring("Terrian: " + _name + " Initalised"), LOGINFO);
+
+
+	}
+
+	void Render() {
+
+		
+		glUseProgram(this->program);
+		glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+
+		//glActiveTexture(GL_TEXTURE0);
+		//glBindTexture(GL_TEXTURE_CUBE_MAP, this->texture);
+		glUniform1i(glGetUniformLocation(this->program, "cubeSampler"), 0);
+		glUniformMatrix4fv(glGetUniformLocation(this->program, "proj_calc"), 1, GL_FALSE, glm::value_ptr(this->projCalc));
+
+		glBindVertexArray(this->VAO);
+		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+		glBindVertexArray(0);
+		glUseProgram(0);
+
+	}
+
+private:
+	std::string name = "Untitled Terrian";
+	glm::mat4 model;
+	glm::mat4 projCalc;
+	glm::mat4 rotationZ;
+	glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
+	glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f);
+	glm::vec2 imageSize;
+
+	Camera* camera = nullptr;
+	GLuint VAO = NULL;
+	GLuint VBO = NULL;
+	GLuint EBO = NULL;
+	GLuint texture = NULL;
+	GLuint image = NULL;
+	GLuint program = NULL;
 
 };

@@ -43,9 +43,11 @@ TextLabel mainTextBack;
 GameManager m_Game;
 ObjectManager objManager;
 LoadTexture textureLoader;
+Terrain* terrian;
 
 //3D Objects
 Simple3DObject cubeModel;
+
 
 GLfloat vertices[] //player
 {
@@ -200,6 +202,8 @@ void Render() {
 	// MAIN MENU SCENE
 
 	if (!m_Game.gameover && m_Game.currentScreen == m_Game.MAIN) {
+
+		terrian->Render();
 
 		tankModel.position = glm::vec3(1.0f, 1.0f, 1.0f);
 
@@ -447,6 +451,8 @@ int main(int argc, char** argv) {
 		//glEnableVertexAttribArray(2);
 
 
+		
+
 		/*
 			==========
 			[ CAMERA ]
@@ -454,6 +460,14 @@ int main(int argc, char** argv) {
 		*/
 
 		mCam.initializeCamera();
+
+		/*
+			==========
+			[ TERRIAN ]
+			==========
+		*/
+		terrian = new Terrain;
+		terrian->Initalise(&mCam, "mountain.raw", "Terrian", glm::vec2(512,512));
 
 		/*
 			========
