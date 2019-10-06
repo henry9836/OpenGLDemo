@@ -13,5 +13,6 @@ void main()
 {
    // vec3 colortemp = fragcolor * abs(sin(currentTime));
    //color = vec4(colortemp, 1.0f);
-   color = mix(texture(Tex1, fragTexCoord), texture(Tex, fragTexCoord), abs(sin(currentTime * 0.01f)));
+   //color = mix(texture(Tex1, fragTexCoord), texture(Tex, fragTexCoord), abs(sin(currentTime * 0.01f)));
+   color = texture(Tex);
 }

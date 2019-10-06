@@ -401,6 +401,24 @@ public:
 
 		//Bind and Generate Info
 
+		glGenTextures(1, &this->texture);
+		glBindTexture(GL_TEXTURE_2D, this->texture);
+
+		int width, height;
+
+		unsigned char* image = SOIL_load_image("Resources/Textures/Box.png", &width, &height, 0, SOIL_LOAD_RGBA);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
+
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		glGenerateMipmap(GL_TEXTURE_2D);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		SOIL_free_image_data(image);
+		glBindTexture(GL_TEXTURE_2D, 0);
+
 		glGenVertexArrays(1, &this->VAO);
 		glBindVertexArray(this->VAO);
 
@@ -420,13 +438,10 @@ public:
 
 		//Create program
 
-		this->program = ShaderLoader::CreateProgram("Resources/Shaders/3DObjectColor.vs", "Resources/Shaders/3DObjectColor.fs");
-
-		int width, height;
-		unsigned char* image;
-
-		//glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-		//this->texID = this->texture;
+		//this->program = ShaderLoader::CreateProgram("Resources/Shaders/3DObjectColor.vs", "Resources/Shaders/3DObjectColor.fs");
+		//this->program = ShaderLoader::CreateProgram("Resources/Shaders/Basic.vs", "Resources/Shaders/Basic.fs"); //Renders 2D
+		//this->program = ShaderLoader::CreateProgram("Resources/Shaders/Basic3D.vs", "Resources/Shaders/Basic3D.fs"); //Render a WTF
+		this->program = ShaderLoader::CreateProgram("Resources/Shaders/heightmap.vs", "Resources/Shaders/heightmap.fs");
 
 		Console_OutputLog(to_wstring("Terrian: " + _name + " Initalised"), LOGINFO);
 
@@ -434,8 +449,8 @@ public:
 	}
 
 	void Render(Camera* camera) {
-		glUseProgram(program);
 
+		glUseProgram(this->program);
 		glm::mat4 model;
 		glm::mat4 translationMatrix = glm::translate(glm::mat4(), position);
 		glm::mat4 rotationZ = glm::rotate(glm::mat4(), glm::radians(this->rotationAngle), this->rotationAxisZ);
@@ -449,16 +464,70 @@ public:
 
 		GLint mvpLoc = glGetUniformLocation(program, "proj_calc");
 		glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(projCalc));
-		GLint lightModel = glGetUniformLocation(program, "model");
-		glUniformMatrix4fv(lightModel, 1, GL_FALSE, glm::value_ptr(model));
-		glUniform3f(glGetUniformLocation(program, "camPos"), camera->camPos.x, camera->camPos.y, camera->camPos.z);
-		//glEnable(GL_CULL_FACE);
+		GLint mvpLoc2 = glGetUniformLocation(program, "vp");
+		glUniformMatrix4fv(mvpLoc2, 1, GL_FALSE, glm::value_ptr(projCalc));
+		GLint modelPass = glGetUniformLocation(program, "model");
+		glUniformMatrix4fv(modelPass, 1, GL_FALSE, glm::value_ptr(model));
 
-		// Draw mesh
 		glBindVertexArray(this->VAO);
+
+		//PATCH
+
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, this->texture);
+
+		glUniform1i(glGetUniformLocation(this->program, "Tex"), 0);
+
+		//PATCH END
+
 		glDrawElements(GL_TRIANGLES, this->TerrianIndices.size(), GL_UNSIGNED_INT, 0);
+		glDisable(GL_CULL_FACE);
+		glDisable(GL_BLEND);
+
+		//Clearing the vertex array
 		glBindVertexArray(0);
 		glUseProgram(0);
+
+
+		//John
+
+		//glUseProgram(this->program);
+
+		////Binding the array
+		//glBindVertexArray(VAO);
+
+		////Enable blending
+		//glEnable(GL_BLEND);
+		//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		////Setting and binding the correct texture
+		////glActiveTexture(GL_TEXTURE0);
+		////glBindTexture(GL_TEXTURE_2D, TerrainTexture);
+
+		////Sending the texture to the GPU via uniform
+		////glUniform1i(glGetUniformLocation(TerrainShader, "tex"), 0);
+
+		////SetUniforms();
+		////Drawing the entity
+
+		////Setting back face culling
+		//glEnable(GL_CULL_FACE);
+		//glCullFace(GL_BACK);
+		//glFrontFace(GL_CW);
+		////glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		//glDrawElements(GL_TRIANGLES, this->TerrianIndices.size(), GL_UNSIGNED_INT, 0);
+		////glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		//glDisable(GL_CULL_FACE);
+		//glDisable(GL_BLEND);
+
+		////Clearing the vertex array
+		//glBindVertexArray(0);
+		//glUseProgram(0);
+		////RenderGrass();
+
 	}
 
 private:
@@ -469,7 +538,7 @@ private:
 	glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
 	glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f);
 	glm::vec2 imageSize;
-	glm::vec3 rotationAxisZ = glm::vec3(0.0f, 0.0f, 0.0f);
+	glm::vec3 rotationAxisZ = glm::vec3(1.0f, 0.0f, 0.0f);
 
 	vector<unsigned char> rawData;
 	vector<float> heightInfo;
