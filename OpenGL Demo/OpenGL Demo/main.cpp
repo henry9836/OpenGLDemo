@@ -203,7 +203,7 @@ void Render() {
 
 	if (!m_Game.gameover && m_Game.currentScreen == m_Game.MAIN) {
 
-		terrian->Render();
+		
 
 		tankModel.position = glm::vec3(1.0f, 1.0f, 1.0f);
 
@@ -257,6 +257,9 @@ void Render() {
 			camControlTextBack.Render();
 			
 		}
+
+		terrian->Render(&mCam);
+
 	}
 	glStencilMask(0x00);
 	glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
@@ -467,7 +470,7 @@ int main(int argc, char** argv) {
 			==========
 		*/
 		terrian = new Terrain;
-		terrian->Initalise(&mCam, "mountain.raw", "Terrian", glm::vec2(512,512));
+		terrian->Initalise(&mCam, "mountain.raw", "Terrian");
 
 		/*
 			========

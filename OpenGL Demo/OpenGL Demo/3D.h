@@ -300,24 +300,17 @@ class Terrain {
 
 public:
 
-	void Initalise(Camera* _cam, std::string _pathToHeightMap, std::string _name, glm::vec2 _imageSize) {
+	void Initalise(Camera* _cam, std::string _pathToHeightMap, std::string _name) {
 		Console_OutputLog(to_wstring("Initalising Terrain: " + _name), LOGINFO);
 
 		this->name = _name;
 		this->camera = _cam;
-		this->imageSize = _imageSize;
-
-		int totalSize = _imageSize.x * _imageSize.y;
+		
 
 		//Create Vertcies and Indices
 
-		vector<unsigned char> rawData(totalSize);
 
-		vector<float> heightInfo(totalSize);
-
-		vector<GLfloat> TerrianVertices;
-
-		vector<GLuint> TerrianIndices;
+		int totalSize = 0;
 
 		//Get Info From Map
 		ifstream heightMap;
@@ -328,20 +321,83 @@ public:
 			return;
 		}
 		else {
-			heightMap.read((char*)&rawData[0], (std::streamsize)rawData.size());
+			//Get Image Size
+
+			char c;
+
+			while (heightMap >> c) {
+				totalSize++;
+			}
+
+			//Resize vectors to image size
+
+			this->rawData.resize(totalSize);
+			this->heightInfo.resize(totalSize);
+
+			this->imageSize.x = sqrt(this->rawData.size());
+			this->imageSize.y = this->imageSize.x;
+
+			totalSize = this->rawData.size();
+
+			heightMap.close();
+
+			heightMap.open(_pathToHeightMap.c_str(), std::ios_base::binary);
+
+			//Put map info into vector
+
+			heightMap.read((char*)&this->rawData[0], (std::streamsize)this->rawData.size());
 		}
 
 		heightMap.close();
 
+
 		for (UINT i = 0; i < totalSize; ++i)
 		{
 			//heightInfo[i] = (float)rawData[i] * mInfo.HeightScale + mInfo.HeightOffset;
-			heightInfo[i] = (float)rawData[i];
+			this->heightInfo[i] = (float)this->rawData[i];
 		}
 
 		//Create Vertices From HeightInfo
 
+		int row = 0;
+		int col = 0;
+
+		for (size_t i = 0; i < this->imageSize.y-1; i++) //for each row
+		{
+			for (size_t j = 0; j < this->imageSize.x-1; j++) //for each col
+			{
+				this->TerrianVertices.push_back(col);
+				int x = j + (row * (this->imageSize.x-1));
+				this->TerrianVertices.push_back(this->heightInfo[x]); //position on j plus where we are on the rows
+				this->TerrianVertices.push_back(row);
+				col++;
+			}
+			row++;
+			col = 0;
+		}
+		
+
 		//Create Indices
+
+		// Iterate over each quad and compute indices.
+
+		this->TerrianIndices.resize(totalSize*6);
+
+		int k = 0;
+		for (unsigned int i = 0; i < this->imageSize.y - 1; ++i) {
+			for (unsigned int j = 0; j < this->imageSize.x - 1; ++j) {
+				this->TerrianIndices[k] = i * this->imageSize.x + j;
+				this->TerrianIndices[k + 1] = i * this->imageSize.x + j + 1;
+				this->TerrianIndices[k + 2] = (i + 1) * this->imageSize.x + j;
+
+				this->TerrianIndices[k + 3] = (i + 1) * this->imageSize.x + j;
+				this->TerrianIndices[k + 4] = i * this->imageSize.x + j + 1;
+				this->TerrianIndices[k + 5] = (i + 1) * this->imageSize.x + j + 1;
+
+				k += 6; // next quad
+			}
+		}
+
 
 		//Bind and Generate Info
 
@@ -350,11 +406,11 @@ public:
 
 		glGenBuffers(1, &this->VBO);
 		glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
-		glBufferData(GL_ARRAY_BUFFER, TerrianVertices.size() * sizeof(GLfloat), &TerrianVertices[0], GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, this->TerrianVertices.size() * sizeof(GLfloat), &this->TerrianVertices[0], GL_STATIC_DRAW);
 
 		glGenBuffers(1, &this->EBO);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, TerrianIndices.size() * sizeof(GLuint), &TerrianIndices[0], GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->TerrianIndices.size() * sizeof(GLuint), &this->TerrianIndices[0], GL_STATIC_DRAW);
 
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
 		glEnableVertexAttribArray(0);
@@ -377,21 +433,63 @@ public:
 
 	}
 
-	void Render() {
+	void Render(Camera* camera) {
+		glUseProgram(program);
 
-		
-		glUseProgram(this->program);
-		glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+		// Bind appropriate textures
+		GLuint diffuseNr = 1;
+		GLuint specularNr = 1;
+		//for (GLuint i = 0; i < this->textures.size(); i++)
+		//{
+		//	glActiveTexture(GL_TEXTURE0 + i); // Active proper texture unit before binding
+		//									  // Retrieve texture number (the N in diffuse_textureN)
+		//	stringstream ss;
+		//	string number;
+		//	string name = this->textures[i].type;
+		//	if (name == "texture_diffuse")
+		//		ss << diffuseNr++; // Transfer GLuint to stream
+		//	else if (name == "texture_specular")
+		//		ss << specularNr++; // Transfer GLuint to stream
+		//	number = ss.str();
+		//	// Now set the sampler to the correct texture unit
+		//	glUniform1i(glGetUniformLocation(program, (name + number).c_str()), i);
+		//	// And finally bind the texture
+		//	glBindTexture(GL_TEXTURE_2D, this->textures[i].id);
+		//}
 
-		//glActiveTexture(GL_TEXTURE0);
-		//glBindTexture(GL_TEXTURE_CUBE_MAP, this->texture);
-		glUniform1i(glGetUniformLocation(this->program, "cubeSampler"), 0);
-		glUniformMatrix4fv(glGetUniformLocation(this->program, "proj_calc"), 1, GL_FALSE, glm::value_ptr(this->projCalc));
+		glm::mat4 model;
+		glm::mat4 translationMatrix = glm::translate(glm::mat4(), position);
+		glm::mat4 rotationZ = glm::rotate(glm::mat4(), glm::radians(this->rotationAngle), this->rotationAxisZ);
+		glm::mat4 scaleMatrix = glm::scale(glm::mat4(), scale);
+		model = translationMatrix * rotationZ * scaleMatrix;
+		glm::mat4 mvp = camera->proj * camera->view * glm::scale(glm::mat4(), scale);
+		glm::vec3 camPos = camera->camPos;
 
+		//POSITION AND SCALE
+		glm::mat4 projCalc = camera->proj * camera->view * model;
+
+		GLint mvpLoc = glGetUniformLocation(program, "proj_calc");
+		glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(projCalc));
+		GLint lightModel = glGetUniformLocation(program, "model");
+		glUniformMatrix4fv(lightModel, 1, GL_FALSE, glm::value_ptr(model));
+		//GLint camPosShade = glGetUniformLocation(program, "camPos");
+		//glUniform3fv(camPosShade, 1, glm::value_ptr(camPos));
+		glUniform3f(glGetUniformLocation(program, "camPos"), camera->camPos.x, camera->camPos.y, camera->camPos.z);
+		//glEnable(GL_CULL_FACE);
+
+		// Draw mesh
 		glBindVertexArray(this->VAO);
-		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_TRIANGLES, this->TerrianIndices.size(), GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
 		glUseProgram(0);
+
+		// Always good practice to set everything back to defaults once configured.
+		//for (GLuint i = 0; i < this->textures.size(); i++) {
+		//	glActiveTexture(GL_TEXTURE0 + i);
+		//	glBindTexture(GL_TEXTURE_2D, 0);
+		//}
+
+		//glDisable(GL_CULL_FACE);
 
 	}
 
@@ -403,6 +501,12 @@ private:
 	glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
 	glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f);
 	glm::vec2 imageSize;
+	glm::vec3 rotationAxisZ = glm::vec3(0.0f, 0.0f, 0.0f);
+
+	vector<unsigned char> rawData;
+	vector<float> heightInfo;
+	vector<GLfloat> TerrianVertices;
+	vector<GLuint> TerrianIndices;
 
 	Camera* camera = nullptr;
 	GLuint VAO = NULL;
@@ -411,5 +515,7 @@ private:
 	GLuint texture = NULL;
 	GLuint image = NULL;
 	GLuint program = NULL;
+
+	float rotationAngle = 0;
 
 };
