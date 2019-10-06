@@ -300,6 +300,31 @@ class Terrain {
 
 public:
 
+	void findNormal() {
+		// Estimate normals for interior nodes using central difference.
+		float invTwoDX = 1.0f / (2.0f * 1.0f);
+		float invTwoDZ = 1.0f / (2.0f * 1.0f);
+		for (UINT i = 2; i < this->imageSize.y; ++i)
+		{
+			for (UINT j = 2; j < this->imageSize.x; ++j)
+			{
+				float t = this->heightInfo[(i - 1) * this->imageSize.x + j];
+				float b = this->heightInfo[(i + 1) * this->imageSize.x + j];
+				float l = this->heightInfo[i * this->imageSize.x + j - 1];
+				float r = this->heightInfo[i * this->imageSize.x + j + 1];
+
+				glm::vec3 tanZ(0.0f, (t - b) * invTwoDZ, 1.0f);
+				glm::vec3 tanX(1.0f, (r - l) * invTwoDX, 0.0f);
+
+				glm::vec3 N;
+				N = glm::cross(tanZ, tanX);
+				glm::normalize(N);
+
+				this->TerrianNormals[(i - 2) * this->imageSize.x + (j - 2)] = N;
+			}
+		}
+	}
+
 	void Initalise(Camera* _cam, std::string _pathToHeightMap, std::string _name) {
 		Console_OutputLog(to_wstring("Initalising Terrain: " + _name), LOGINFO);
 
@@ -322,22 +347,40 @@ public:
 		}
 		else {
 			//Get Image Size
+			
+			int w, h, c, f = 0;
 
+			unsigned char* image = SOIL_load_image
+			(
+				_pathToHeightMap.c_str(),
+				&w, &h, 0,
+				SOIL_LOAD_L
+			);
+			
+			if (image == nullptr) {
+				Console_OutputLog(L"Could not load height map with SOIL defaulting to 512x512 image size", LOGWARN);
+				w = 512;
+				h = 512;
+			}
+
+			totalSize = w * h;
+
+			/*
 			char c;
+
 
 			while (heightMap >> c) {
 				totalSize++;
 			}
+			*/
 
 			//Resize vectors to image size
 
 			this->rawData.resize(totalSize);
-			this->heightInfo.resize(totalSize);
+			this->heightInfo.resize(totalSize * 2);
 
 			this->imageSize.x = sqrt(this->rawData.size());
 			this->imageSize.y = this->imageSize.x;
-
-			totalSize = this->rawData.size();
 
 			heightMap.close();
 
@@ -351,7 +394,7 @@ public:
 		heightMap.close();
 
 
-		for (UINT i = 0; i < totalSize; ++i)
+		for (UINT i = 0; i < rawData.size(); ++i)
 		{
 			//heightInfo[i] = (float)rawData[i] * mInfo.HeightScale + mInfo.HeightOffset;
 			this->heightInfo[i] = (float)this->rawData[i];
@@ -362,20 +405,44 @@ public:
 		int row = 0;
 		int col = 0;
 
-		for (size_t i = 0; i < this->imageSize.y-1; i++) //for each row
+
+		float halfWidth = (this->imageSize.x - 1) * 1.0f * 0.5f;
+		float halfDepth = (this->imageSize.y - 1) * 1.0f * 0.5f;
+
+		float du = 1.0f / (this->imageSize.x - 1);
+		float dv = 1.0f / (this->imageSize.y - 1);
+
+		TerrianNormals.resize(totalSize + 1);
+		int inter = 0;
+		findNormal();
+
+		for (UINT i = 0; i < this->imageSize.y -1; ++i)
 		{
-			for (size_t j = 0; j < this->imageSize.x-1; j++) //for each col
+			float z = halfDepth - i * 1.0f;
+			for (UINT j = 0; j < this->imageSize.x - 1; ++j)
 			{
-				this->TerrianVertices.push_back(col);
-				int x = j + (row * (this->imageSize.x-1));
-				this->TerrianVertices.push_back(this->heightInfo[x]); //position on j plus where we are on the rows
-				this->TerrianVertices.push_back(row);
-				col++;
+
+				float x = -halfWidth + j * 1.0f;
+				float y = heightInfo[i * this->imageSize.x + j];
+
+				//Positions
+				this->TerrianVertices.push_back(x);
+				this->TerrianVertices.push_back(y);
+				this->TerrianVertices.push_back(z);
+				
+				//Normal
+				this->TerrianVertices.push_back(TerrianNormals[inter].x);
+				this->TerrianVertices.push_back(TerrianNormals[inter].y);
+				this->TerrianVertices.push_back(TerrianNormals[inter].z);
+
+				inter++;
+
+				//Stretch texture over grid.
+				this->TerrianVertices.push_back(j * du);
+				this->TerrianVertices.push_back(i * dv);
+
 			}
-			row++;
-			col = 0;
 		}
-		
 
 		//Create Indices
 
@@ -430,7 +497,13 @@ public:
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->EBO);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->TerrianIndices.size() * sizeof(GLuint), &this->TerrianIndices[0], GL_STATIC_DRAW);
 
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)0);
+		glEnableVertexAttribArray(0);
+
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
+		glEnableVertexAttribArray(0);
+
+		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
 		glEnableVertexAttribArray(0);
 
 		/*glGenTextures(1, &this->texture);
@@ -473,14 +546,14 @@ public:
 
 		//PATCH
 
-		glEnable(GL_BLEND);
+		/*glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, this->texture);
 
 		glUniform1i(glGetUniformLocation(this->program, "Tex"), 0);
-
+*/
 		//PATCH END
 
 		glDrawElements(GL_TRIANGLES, this->TerrianIndices.size(), GL_UNSIGNED_INT, 0);
@@ -535,7 +608,7 @@ private:
 	glm::mat4 model;
 	glm::mat4 projCalc;
 	glm::mat4 rotationZ;
-	glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
+	glm::vec3 position = glm::vec3(0.0f, -150.0f, 0.0f);
 	glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f);
 	glm::vec2 imageSize;
 	glm::vec3 rotationAxisZ = glm::vec3(1.0f, 0.0f, 0.0f);
@@ -544,6 +617,7 @@ private:
 	vector<float> heightInfo;
 	vector<GLfloat> TerrianVertices;
 	vector<GLuint> TerrianIndices;
+	vector<glm::vec3> TerrianNormals;
 
 	Camera* camera = nullptr;
 	GLuint VAO = NULL;
