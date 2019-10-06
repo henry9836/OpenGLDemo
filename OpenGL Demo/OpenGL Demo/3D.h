@@ -436,27 +436,6 @@ public:
 	void Render(Camera* camera) {
 		glUseProgram(program);
 
-		// Bind appropriate textures
-		GLuint diffuseNr = 1;
-		GLuint specularNr = 1;
-		//for (GLuint i = 0; i < this->textures.size(); i++)
-		//{
-		//	glActiveTexture(GL_TEXTURE0 + i); // Active proper texture unit before binding
-		//									  // Retrieve texture number (the N in diffuse_textureN)
-		//	stringstream ss;
-		//	string number;
-		//	string name = this->textures[i].type;
-		//	if (name == "texture_diffuse")
-		//		ss << diffuseNr++; // Transfer GLuint to stream
-		//	else if (name == "texture_specular")
-		//		ss << specularNr++; // Transfer GLuint to stream
-		//	number = ss.str();
-		//	// Now set the sampler to the correct texture unit
-		//	glUniform1i(glGetUniformLocation(program, (name + number).c_str()), i);
-		//	// And finally bind the texture
-		//	glBindTexture(GL_TEXTURE_2D, this->textures[i].id);
-		//}
-
 		glm::mat4 model;
 		glm::mat4 translationMatrix = glm::translate(glm::mat4(), position);
 		glm::mat4 rotationZ = glm::rotate(glm::mat4(), glm::radians(this->rotationAngle), this->rotationAxisZ);
@@ -472,8 +451,6 @@ public:
 		glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(projCalc));
 		GLint lightModel = glGetUniformLocation(program, "model");
 		glUniformMatrix4fv(lightModel, 1, GL_FALSE, glm::value_ptr(model));
-		//GLint camPosShade = glGetUniformLocation(program, "camPos");
-		//glUniform3fv(camPosShade, 1, glm::value_ptr(camPos));
 		glUniform3f(glGetUniformLocation(program, "camPos"), camera->camPos.x, camera->camPos.y, camera->camPos.z);
 		//glEnable(GL_CULL_FACE);
 
@@ -482,15 +459,6 @@ public:
 		glDrawElements(GL_TRIANGLES, this->TerrianIndices.size(), GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
 		glUseProgram(0);
-
-		// Always good practice to set everything back to defaults once configured.
-		//for (GLuint i = 0; i < this->textures.size(); i++) {
-		//	glActiveTexture(GL_TEXTURE0 + i);
-		//	glBindTexture(GL_TEXTURE_2D, 0);
-		//}
-
-		//glDisable(GL_CULL_FACE);
-
 	}
 
 private:
