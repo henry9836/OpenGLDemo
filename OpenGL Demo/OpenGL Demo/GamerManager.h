@@ -20,12 +20,12 @@ public:
 	};
 	int currentScreen = MAIN;
 
-	std::vector<Enemy*>* enemyList;
-	std::vector<AIObject*>* aiList;
+	std::vector<Enemy*>* enemyList = nullptr;
+	std::vector<AIObject*>* aiList = nullptr;
 
 	glm::vec3 playerPos = glm::vec3(0,0,0);
 
-	Camera* mCam;
+	Camera* mCam = nullptr;
 
 	bool gameover = false;
 	bool stencil = false;

@@ -304,14 +304,14 @@ public:
 		// Estimate normals for interior nodes using central difference.
 		float invTwoDX = 1.0f / (2.0f * 1.0f);
 		float invTwoDZ = 1.0f / (2.0f * 1.0f);
-		for (UINT i = 2; i < this->imageSize.y; ++i)
+		for (int i = 2; i < this->imageSize.y; ++i)
 		{
-			for (UINT j = 2; j < this->imageSize.x; ++j)
+			for (int j = 2; j < this->imageSize.x; ++j)
 			{
-				float t = this->heightInfo[(i - 1) * this->imageSize.x + j];
-				float b = this->heightInfo[(i + 1) * this->imageSize.x + j];
-				float l = this->heightInfo[i * this->imageSize.x + j - 1];
-				float r = this->heightInfo[i * this->imageSize.x + j + 1];
+				float t = this->heightInfo[(i - 1) * (int)this->imageSize.x + j];
+				float b = this->heightInfo[(i + 1) * (int)this->imageSize.x + j];
+				float l = this->heightInfo[i * (int)this->imageSize.x + j - 1];
+				float r = this->heightInfo[i * (int)this->imageSize.x + j + 1];
 
 				glm::vec3 tanZ(0.0f, (t - b) * invTwoDZ, 1.0f);
 				glm::vec3 tanX(1.0f, (r - l) * invTwoDX, 0.0f);
@@ -320,7 +320,7 @@ public:
 				N = glm::cross(tanZ, tanX);
 				glm::normalize(N);
 
-				this->TerrianNormals[(i - 2) * this->imageSize.x + (j - 2)] = N;
+				this->TerrianNormals[(i - 2) * (int)this->imageSize.x + (j - 2)] = N;
 			}
 		}
 	}
@@ -353,10 +353,10 @@ public:
 				//  | /|
 				//  |/ |
 				// C*--*D
-				float A = heightInfo[row * this->imageSize.x + col];
-				float B = heightInfo[row * this->imageSize.x + col + 1];
-				float C = heightInfo[(row + 1) * this->imageSize.x + col];
-				float D = heightInfo[(row + 1) * this->imageSize.x + col + 1];
+				float A = heightInfo[row * (int)this->imageSize.x + col];
+				float B = heightInfo[row * (int)this->imageSize.x + col + 1];
+				float C = heightInfo[(row + 1) * (int)this->imageSize.x + col];
+				float D = heightInfo[(row + 1) * (int)this->imageSize.x + col + 1];
 
 				// Where we are relative to the cell.
 				float s = c - (float)col;
@@ -411,7 +411,7 @@ public:
 		else {
 			//Get Image Size
 			
-			int w, h, c, f = 0;
+			int w = 0, h = 0;
 
 			unsigned char* image = SOIL_load_image
 			(
@@ -433,7 +433,7 @@ public:
 			this->rawData.resize(totalSize);
 			this->heightInfo.resize(totalSize * 2);
 
-			this->imageSize.x = sqrt(this->rawData.size());
+			this->imageSize.x = (GLfloat)sqrt(this->rawData.size());
 			this->imageSize.y = this->imageSize.x;
 
 			heightMap.close();
@@ -451,7 +451,6 @@ public:
 		for (UINT i = 0; i < rawData.size(); ++i)
 		{
 			heightInfo[i] = (float)rawData[i] * heightScale;
-			//this->heightInfo[i] = (float)this->rawData[i];
 		}
 
 		//Create Vertices From HeightInfo
@@ -460,21 +459,21 @@ public:
 		int col = 0;
 
 
-		float halfWidth = (this->imageSize.x - 1) * 1.0f * 0.5f;
-		float halfDepth = (this->imageSize.y - 1) * 1.0f * 0.5f;
+		float halfWidth = ((int)this->imageSize.x - 1) * 1.0f * 0.5f;
+		float halfDepth = ((int)this->imageSize.y - 1) * 1.0f * 0.5f;
 
-		float du = 1.0f / (this->imageSize.x - 1);
-		float dv = 1.0f / (this->imageSize.y - 1);
+		float du = 1.0f / ((int)this->imageSize.x - 1);
+		float dv = 1.0f / ((int)this->imageSize.y - 1);
 
 		TerrianNormals.resize(totalSize + 1);
 		int inter = 0;
 		findNormal();
 
 		//Create collision vectors
-		collisionInfo.resize(this->imageSize.y);
+		collisionInfo.resize((int)this->imageSize.y);
 		for (size_t i = 0; i < collisionInfo.size(); i++)
 		{
-			collisionInfo.at(i).resize(this->imageSize.x);
+			collisionInfo.at(i).resize((int)this->imageSize.x);
 		}
 
 		for (UINT i = 0; i < this->imageSize.y -1; ++i)
@@ -484,7 +483,7 @@ public:
 			{
 
 				float x = -halfWidth + j * 1.0f;
-				float y = heightInfo[i * this->imageSize.x + j];
+				float y = heightInfo[i * (int)this->imageSize.x + j];
 
 
 				//Positions
@@ -515,13 +514,13 @@ public:
 		int k = 0;
 		for (unsigned int i = 0; i < this->imageSize.y - 1; ++i) {
 			for (unsigned int j = 0; j < this->imageSize.x - 1; ++j) {
-				this->TerrianIndices[k] = i * this->imageSize.x + j;
-				this->TerrianIndices[k + 1] = i * this->imageSize.x + j + 1;
-				this->TerrianIndices[k + 2] = (i + 1) * this->imageSize.x + j;
+				this->TerrianIndices[k] = i * (int)this->imageSize.x + j;
+				this->TerrianIndices[k + 1] = i * (int)this->imageSize.x + j + 1;
+				this->TerrianIndices[k + 2] = (i + 1) * (int)this->imageSize.x + j;
 
-				this->TerrianIndices[k + 3] = (i + 1) * this->imageSize.x + j;
-				this->TerrianIndices[k + 4] = i * this->imageSize.x + j + 1;
-				this->TerrianIndices[k + 5] = (i + 1) * this->imageSize.x + j + 1;
+				this->TerrianIndices[k + 3] = (i + 1) * (int)this->imageSize.x + j;
+				this->TerrianIndices[k + 4] = i * (int)this->imageSize.x + j + 1;
+				this->TerrianIndices[k + 5] = (i + 1) * (int)this->imageSize.x + j + 1;
 
 				k += 6; // next quad
 			}
@@ -684,10 +683,10 @@ public:
 		glBindVertexArray(0);
 	};
 
-	GLuint VAO, VBO, EBO;
+	GLuint VAO = 0, VBO = 0, EBO = 0;
 	glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
 	glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f);
 	glm::vec3 rotationAxisZ = glm::vec3(1.0f, 0.0f, 0.0f);
 	float rotationAngle = 90;
-	GLuint program;
+	GLuint program = 0;
 };
