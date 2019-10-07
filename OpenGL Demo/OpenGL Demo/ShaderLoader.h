@@ -16,6 +16,7 @@ public:
 	ShaderLoader(void);
 	~ShaderLoader(void);
 	static GLuint CreateProgram(const char* VertexShaderFilename, const char* FragmentShaderFilename);
+	static GLuint CreateProgram(const char* vertexShaderFilename, const char* fragmentShaderFilename, const char* geometryShaderFilename);
 
 private:
 	static GLuint CreateShader(GLenum shaderType, const char* shaderName);
