@@ -144,7 +144,7 @@ public:
 
 		//Create program
 
-		this->program = ShaderLoader::CreateProgram("Resources/Shaders/CubeMapFog.vs", "Resources/Shaders/CubeMapFog.fs");
+		this->program = ShaderLoader::CreateProgram("Resources/Shaders/CubeMap.vs", "Resources/Shaders/CubeMap.fs");
 
 		int width, height;
 		unsigned char* image;
@@ -300,6 +300,74 @@ class Terrain {
 
 public:
 
+
+	bool inBounds(UINT i, UINT j)
+	{
+		// True if ij are valid indices; false otherwise.
+		return
+			i >= 0 && i < this->imageSize.y &&
+			j >= 0 && j < this->imageSize.x;
+	}
+
+	float average(UINT i, UINT j)
+	{
+		// Function computes the average height of the ij element.
+		// It averages itself with its eight neighbor pixels.  Note
+		// that if a pixel is missing neighbor, we just don't include it
+		// in the average--that is, edge pixels don't have a neighbor pixel.
+		//
+		// ----------
+		// | 1| 2| 3|
+		// ----------
+		// |4 |ij| 6|
+		// ----------
+		// | 7| 8| 9|
+		// ----------
+
+		float avg = 0.0f;
+		float num = 0.0f;
+
+		for (UINT m = i - 1; m <= i + 1; ++m)
+		{
+			for (UINT n = j - 1; n <= j + 1; ++n)
+			{
+				if (inBounds(m, n))
+				{
+					avg += heightInfo[m * (int)this->imageSize.y + n];
+					num += 1.0f;
+				}
+			}
+		}
+
+		return avg / num;
+	}
+
+	//float random(float x, float y) {
+	//	int n = x + y * 57;
+	//	n = (n << 13) ^ n; 
+	//	int t = (n * (n * n * 15731 + 789221) + 1376312589) & 0x7fffffff; 
+	//	return 1.0 - double(t) * 0.931322574615478515625e-9;
+	//}
+
+
+	//Smooth out the terrain
+	void smoothTerrain() {
+		int pos = 0;
+		
+		vector<float> smoothed(heightInfo.size());
+
+		for (size_t y = 0; y < this->imageSize.y; y++)
+		{
+			for (size_t x = 0; x < this->imageSize.x; x++)
+			{
+				smoothed[y * (int)this->imageSize.x + x] = average(y, x);
+			}
+		}
+		
+		heightInfo = smoothed;
+
+	}
+
 	void findNormal() {
 		// Estimate normals for interior nodes using central difference.
 		float invTwoDX = 1.0f / (2.0f * 1.0f);
@@ -452,6 +520,8 @@ public:
 		{
 			heightInfo[i] = (float)rawData[i] * heightScale;
 		}
+
+		smoothTerrain();
 
 		//Create Vertices From HeightInfo
 
