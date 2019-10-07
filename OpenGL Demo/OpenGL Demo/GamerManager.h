@@ -9,7 +9,9 @@ class GameManager {
 public:
 	GameManager();
 
-	void CheckGeneralInput(GameManager& m_game, Camera& camera, glm::vec3 orbittar);
+	void CheckGeneralInput(GameManager& m_game, Camera& camera, glm::vec3 orbittar, Model* player);
+
+
 
 	enum Screens {
 		MAIN,

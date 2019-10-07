@@ -12,7 +12,7 @@ GameManager::GameManager() {
 	highscoreFileIn.close();
 }
 
-void GameManager::CheckGeneralInput(GameManager& m_game, Camera& camera, glm::vec3 orbittar)
+void GameManager::CheckGeneralInput(GameManager& m_game, Camera& camera, glm::vec3 orbittar, Model* player)
 {
 	switch (m_game.currentScreen)
 	{
@@ -84,16 +84,20 @@ void GameManager::CheckGeneralInput(GameManager& m_game, Camera& camera, glm::ve
 			caminManual = true;
 		}
 		if (m_Input.CheckKeyDown('y')) { //go forward
-			mCam->camPos += glm::vec3(1.0f, 0.0f, 0.0f);
+			//mCam->camPos += glm::vec3(1.0f, 0.0f, 0.0f);
+			player->position += glm::vec3(1.0f, 0.0f, 0.0f);
 		}
 		if (m_Input.CheckKeyDown('h')) { //go back
-			mCam->camPos -= glm::vec3(1.0f, 0.0f, 0.0f);
+			//mCam->camPos -= glm::vec3(1.0f, 0.0f, 0.0f);
+			player->position -= glm::vec3(1.0f, 0.0f, 0.0f);
 		}
 		if (m_Input.CheckKeyDown('g')) { //go left
-			mCam->camPos -= glm::vec3(0.0f, 0.0f, 1.0f);
+			//mCam->camPos -= glm::vec3(0.0f, 0.0f, 1.0f);
+			player->position -= glm::vec3(0.0f, 0.0f, 1.0f);
 		}
 		if (m_Input.CheckKeyDown('j')) { //go right
-			mCam->camPos += glm::vec3(0.0f, 0.0f, 1.0f);
+			//mCam->camPos += glm::vec3(0.0f, 0.0f, 1.0f);
+			player->position += glm::vec3(0.0f, 0.0f, 1.0f);
 		}
 		break;
 	}

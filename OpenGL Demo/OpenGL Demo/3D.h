@@ -325,6 +325,55 @@ public:
 		}
 	}
 
+	float width()const
+	{
+		return (this->imageSize.x - 1) * 1;
+	}
+
+	float depth()const
+	{
+		return (this->imageSize.y - 1) * 1;
+	}
+
+	float getHeight(float x, float z)const
+	{
+		// Transform from terrain local space to "cell" space.
+		float c = (x + 0.5f * width()) / 1;
+		float d = (z - 0.5f * depth()) / -1;
+
+		// Get the row and column we are in.
+		int row = (int)floorf(d);
+		int col = (int)floorf(c);
+
+		// Grab the heights of the cell we are in.
+		// A*--*B
+		//  | /|
+		//  |/ |
+		// C*--*D
+		float A = heightInfo[row * this->imageSize.x + col];
+		float B = heightInfo[row * this->imageSize.x + col + 1];
+		float C = heightInfo[(row + 1) * this->imageSize.x + col];
+		float D = heightInfo[(row + 1) * this->imageSize.x + col + 1];
+
+		// Where we are relative to the cell.
+		float s = c - (float)col;
+		float t = d - (float)row;
+
+		// If upper triangle ABC.
+		if (s + t <= 1.0f)
+		{
+			float uy = B - A;
+			float vy = C - A;
+			return A + s * uy + t * vy;
+		}
+		else // lower triangle DCB.
+		{
+			float uy = C - D;
+			float vy = B - D;
+			return D + (1.0f - s) * uy + (1.0f - t) * vy;
+		}
+	}
+
 	void Initalise(Camera* _cam, std::string _pathToHeightMap, std::string _name) {
 		Console_OutputLog(to_wstring("Initalising Terrain: " + _name), LOGINFO);
 
@@ -416,14 +465,22 @@ public:
 		int inter = 0;
 		findNormal();
 
+		//Create collision vectors
+		collisionInfo.resize(this->imageSize.y);
+		for (size_t i = 0; i < collisionInfo.size(); i++)
+		{
+			collisionInfo.at(i).resize(this->imageSize.x);
+		}
+
 		for (UINT i = 0; i < this->imageSize.y -1; ++i)
 		{
 			float z = halfDepth - i * 1.0f;
-			for (UINT j = 0; j < this->imageSize.x - 1; ++j)
+			for (UINT j = 0; j < this->imageSize.x; ++j)
 			{
 
 				float x = -halfWidth + j * 1.0f;
 				float y = heightInfo[i * this->imageSize.x + j];
+
 
 				//Positions
 				this->TerrianVertices.push_back(x);
@@ -570,12 +627,15 @@ public:
 
 	}
 
+	vector<vector<float>> collisionInfo;
+	glm::vec3 position = glm::vec3(0.0f, -150.0f, 0.0f);
+
 private:
 	std::string name = "Untitled Terrian";
 	glm::mat4 model;
 	glm::mat4 projCalc;
 	glm::mat4 rotationZ;
-	glm::vec3 position = glm::vec3(0.0f, -150.0f, 0.0f);
+	
 	glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f);
 	glm::vec2 imageSize;
 	glm::vec3 rotationAxisZ = glm::vec3(1.0f, 0.0f, 0.0f);
@@ -585,6 +645,7 @@ private:
 	vector<GLfloat> TerrianVertices;
 	vector<GLuint> TerrianIndices;
 	vector<glm::vec3> TerrianNormals;
+	
 
 	Camera* camera = nullptr;
 	GLuint VAO = NULL;

@@ -88,7 +88,7 @@ Sprite backdropSprite;
 Sprite waterSprite;
 
 //Models
-Model tankModel;
+Model* tankModel;
 Model shellModel;
 Model basicCubeModel;
 
@@ -203,9 +203,7 @@ void Render() {
 
 	if (!m_Game.gameover && m_Game.currentScreen == m_Game.MAIN) {
 
-		
-
-		tankModel.position = glm::vec3(1.0f, 1.0f, 1.0f);
+		terrian->Render(&mCam);
 
 		for (size_t i = 0; i < menuSprites.size(); i++)
 		{
@@ -246,7 +244,9 @@ void Render() {
 		}
 
 		if (firstLoop) {
-			mCam.SwitchMode(mCam.ORBIT, tankModel.position, glm::vec3(-5.0f, 3.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), 5.0f, 5.0f);
+			tankModel->position = glm::vec3(1.0f, 1.0f, 1.0f);
+			//mCam.SwitchMode(mCam.ORBIT, tankModel->position, glm::vec3(-5.0f, 3.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), 5.0f, 5.0f);
+			mCam.SwitchMode(mCam.FOLLOW_STATIC, tankModel->position, glm::vec3(-5.0f, 3.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), 5.0f, 5.0f);
 			firstLoop = false;
 		}
 		mainText.Render();
@@ -258,7 +258,13 @@ void Render() {
 			
 		}
 
-		terrian->Render(&mCam);
+		float floorPos = terrian->position.y + terrian->getHeight(tankModel->position.x,tankModel->position.z);
+
+		tankModel->position = glm::vec3(tankModel->position.x, floorPos, tankModel->position.z);
+		mCam.SwitchMode(mCam.FOLLOW_STATIC, tankModel->position, glm::vec3(-5.0f, 3.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), 5.0f, 5.0f);
+
+
+
 
 	}
 	glStencilMask(0x00);
@@ -279,7 +285,7 @@ void Update() {
 	
 	glutPostRedisplay();
 	mAudio.Tick(); //Update Audio
-	m_Game.CheckGeneralInput(m_Game, mCam, tankModel.position); //Get Current Keyboard Input State
+	m_Game.CheckGeneralInput(m_Game, mCam, tankModel->position, tankModel); //Get Current Keyboard Input State
 	if (m_Game.leave) { //Quit Game
 		glutLeaveMainLoop();
 	}
@@ -287,7 +293,7 @@ void Update() {
 
 int main(int argc, char** argv) {
 	
-	try {
+	/*try {*/
 		Console_Initalize(); //Show Console Controller Banner
 
 		Console_OutputLog(L"Initializing Game...", LOGINFO);
@@ -348,7 +354,7 @@ int main(int argc, char** argv) {
 		mainModels.push_back(new Model("Resources/Models/BasicCube/Cube.obj", &mCam, "Fog Cube", rotationAngle, glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(10.0f, 1.0f, 1.0f), glm::vec3(0.5f, 0.5f, 0.5f), "Resources/Shaders/3DObjectFog.vs", "Resources/Shaders/3DObjectFog.fs"));
 
 		mainModels.push_back(new Model("Resources/Models/Tank/Tank.obj", &mCam, "Tank", rotationAngle, glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), "Resources/Shaders/3DObject_Diffuse.vs", "Resources/Shaders/3DObject_BlinnPhong.fs"));
-
+		tankModel = mainModels.back();
 		/*
 			============
 			[ CUBEMAPS ]
@@ -508,12 +514,12 @@ int main(int argc, char** argv) {
 		Console_OutputLog(L"Game Assets Initalised. Starting Game...", LOGINFO);
 
 		glutMainLoop();
-	}
+	//}
 
-	catch (...) { //If we go here there is no recovery
-		Console_OutputLog(L"Something went wrong and the application cannot recover", LOGFATAL);
-		system("pause");
-	}
+	//catch (...) { //If we go here there is no recovery
+	//	Console_OutputLog(L"Something went wrong and the application cannot recover", LOGFATAL);
+	//	system("pause");
+	//}
 
 	return 0;
 }
