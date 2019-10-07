@@ -165,6 +165,7 @@
     <ClInclude Include="Audio.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ConsoleController.h" />
+    <ClInclude Include="FrameBuffers.h" />
     <ClInclude Include="ft2build.h" />
     <ClInclude Include="GamerManager.h" />
     <ClInclude Include="Input.h" />

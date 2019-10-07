@@ -28,6 +28,7 @@
 #include "ConsoleController.h"
 #include "3D.h"
 #include "AI.h"
+#include "FrameBuffers.h"
 
 using namespace std;
 
@@ -45,6 +46,7 @@ ObjectManager objManager;
 LoadTexture textureLoader;
 Terrain* terrian;
 GeoShape* geoShape;
+FrameBuffer* frameBuffer;
 
 //3D Objects
 Simple3DObject cubeModel;
@@ -135,6 +137,11 @@ GLfloat backVerts[] = {
 
 //Render function displays everything on the screen
 void Render() {
+
+
+	glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer->buffer);
+	glEnable(GL_DEPTH_TEST);
+
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	
 	glClearColor(r, g, b, 1.0);
@@ -270,7 +277,7 @@ void Render() {
 		mCam.SwitchMode(mCam.FOLLOW, glm::vec3(tankModel->position.x - 30.0f, tankModel->position.y, tankModel->position.z), glm::vec3(-5.0f, 5.0f, 1.0f), glm::vec3(50.0f, 0.0f, 0.0f), 1.0f, 50.0f);
 		//mCam.camPos = glm::vec3(tankModel->position.x - 10.0f, tankModel->position.y + 5.0f, tankModel->position.z + 1.0f);
 
-
+		frameBuffer->Render(currentTime);
 
 	}
 	glStencilMask(0x00);
@@ -491,7 +498,15 @@ int main(int argc, char** argv) {
 		*/
 		geoShape = new GeoShape;
 		geoShape->program = ShaderLoader::CreateProgram("Resources/Shaders/GeometryShader.vs", "Resources/Shaders/GeometryShader.fs", "Resources/Shaders/GeometryShader.gs");
-		//geoShape->Initalize();
+		
+		/*
+			================
+			[ FRAME BUFFER ]
+			================
+		*/
+
+		frameBuffer = new FrameBuffer;
+		frameBuffer->Initalize();
 
 		/*
 			========
