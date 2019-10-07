@@ -14,7 +14,7 @@
 
 ScreenInfo screen;
 
-GLfloat quadVertices[] = { // vertex attributes for a quad that fills the entire screen in Normalized Device Coordinates.
+GLfloat frameVertices[] = {
 	// positions   // texCoords
 	-1.0f,  1.0f,  0.0f, 1.0f,
 	-1.0f, -1.0f,  0.0f, 0.0f,
@@ -30,11 +30,11 @@ public:
 	void Initalize() {
 		Console_OutputLog(L"Creating Frame Buffer...", LOGINFO);
 		
-		glGenVertexArrays(1, &this->quadVAO);
-		glGenBuffers(1, &quadVBO);
-		glBindVertexArray(quadVAO);
-		glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+		glGenVertexArrays(1, &this->VAO);
+		glGenBuffers(1, &VBO);
+		glBindVertexArray(VAO);
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(frameVertices), &frameVertices, GL_STATIC_DRAW);
 		glEnableVertexAttribArray(0);
 		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
 		glEnableVertexAttribArray(1);
@@ -82,7 +82,7 @@ public:
 		//glUniform1i(glGetUniformLocation(deltaTime, "deltaTime"), 0);
 		glBindTexture(GL_TEXTURE_2D, this->textureBuffer);
 
-		glBindVertexArray(this->quadVAO);
+		glBindVertexArray(this->VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		glBindVertexArray(0);
 	};
@@ -93,6 +93,6 @@ public:
 	GLuint program;
 
 private:
-	GLuint quadVAO;
-	GLuint quadVBO;
+	GLuint VAO;
+	GLuint VBO;
 };
