@@ -27,9 +27,12 @@ GLfloat frameVertices[] = {
 
 class FrameBuffer {
 public:
+	//Create Frame Buffer
 	void Initalize() {
 		Console_OutputLog(L"Creating Frame Buffer...", LOGINFO);
 		
+
+		//Create the VAO and VBO
 		glGenVertexArrays(1, &this->VAO);
 		glGenBuffers(1, &VBO);
 		glBindVertexArray(VAO);
@@ -42,11 +45,13 @@ public:
 
 		glBindVertexArray(0);
 
+
+		//Create program
 		program = ShaderLoader::CreateProgram("Resources/Shaders/POST.vs", "Resources/Shaders/POST.fs");
 
+		//Set up the RBO
 		glGenFramebuffers(1, &buffer);
 		glBindFramebuffer(GL_FRAMEBUFFER, buffer);
-		// create a color attachment texture
 
 		glGenTextures(1, &textureBuffer);
 		glBindTexture(GL_TEXTURE_2D, textureBuffer);
@@ -54,24 +59,23 @@ public:
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureBuffer, 0);
-		// create a renderbuffer object for depth and stencil attachment (we won't be sampling these)
 
 		glGenRenderbuffers(1, &RBO);
 		glBindRenderbuffer(GL_RENDERBUFFER, RBO);
-		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, screen.SCR_WIDTH, screen.SCR_HEIGHT); // use a single renderbuffer object for both a depth AND stencil buffer.
-		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, RBO); // now actually attach it
-		// now that we actually created the framebuffer and added all attachments we want to check if it is actually complete now
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, screen.SCR_WIDTH, screen.SCR_HEIGHT); 
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, RBO);
+
+		//Did the frame buffer get created correctly?
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 			Console_OutputLog(L"Could Not Create Frame Buffer", LOGWARN);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	};
 
+	//Render Frame Buffer
 	void Render(float currentTime) {
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glDisable(GL_DEPTH_TEST); //screenspace quad so depth is not required
-
-		//glClear(GL_COLOR_BUFFER_BIT);
+		glDisable(GL_DEPTH_TEST); 
 
 		glUseProgram(this->program);
 		glActiveTexture(GL_TEXTURE0);
@@ -79,7 +83,6 @@ public:
 		GLint currentTimeLoc = glGetUniformLocation(this->program, "currentTime");
 		glUniform1f(currentTimeLoc, currentTime);
 		glUniform1i(glGetUniformLocation(this->program, "renderTexture"), 0);
-		//glUniform1i(glGetUniformLocation(deltaTime, "deltaTime"), 0);
 		glBindTexture(GL_TEXTURE_2D, this->textureBuffer);
 
 		glBindVertexArray(this->VAO);

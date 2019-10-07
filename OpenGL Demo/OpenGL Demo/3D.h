@@ -392,6 +392,9 @@ public:
 		this->camera = _cam;
 		
 
+		float heightScale = 0.5f;
+		
+
 		//Create Vertcies and Indices
 
 
@@ -425,15 +428,6 @@ public:
 
 			totalSize = w * h;
 
-			/*
-			char c;
-
-
-			while (heightMap >> c) {
-				totalSize++;
-			}
-			*/
-
 			//Resize vectors to image size
 
 			this->rawData.resize(totalSize);
@@ -456,8 +450,8 @@ public:
 
 		for (UINT i = 0; i < rawData.size(); ++i)
 		{
-			//heightInfo[i] = (float)rawData[i] * mInfo.HeightScale + mInfo.HeightOffset;
-			this->heightInfo[i] = (float)this->rawData[i];
+			heightInfo[i] = (float)rawData[i] * heightScale;
+			//this->heightInfo[i] = (float)this->rawData[i];
 		}
 
 		//Create Vertices From HeightInfo
