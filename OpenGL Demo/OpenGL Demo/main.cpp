@@ -44,6 +44,7 @@ GameManager m_Game;
 ObjectManager objManager;
 LoadTexture textureLoader;
 Terrain* terrian;
+GeoShape* geoShape;
 
 //3D Objects
 Simple3DObject cubeModel;
@@ -205,6 +206,9 @@ void Render() {
 
 		terrian->Render(&mCam);
 
+		geoShape->position = glm::vec3(tankModel->position.x, tankModel->position.y + 2, tankModel->position.z);
+		geoShape->Render(&mCam);
+
 		for (size_t i = 0; i < menuSprites.size(); i++)
 		{
 			menuSprites.at(i)->Render(&mCam, &cubeMap);
@@ -245,6 +249,7 @@ void Render() {
 
 		if (firstLoop) {
 			tankModel->position = glm::vec3(1.0f, 1.0f, 1.0f);
+			tankModel->rotationAngle = -90;
 			//mCam.SwitchMode(mCam.ORBIT, tankModel->position, glm::vec3(-5.0f, 3.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), 5.0f, 5.0f);
 			mCam.SwitchMode(mCam.FOLLOW_STATIC, tankModel->position, glm::vec3(-5.0f, 3.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), 5.0f, 5.0f);
 			firstLoop = false;
@@ -477,6 +482,15 @@ int main(int argc, char** argv) {
 		*/
 		terrian = new Terrain;
 		terrian->Initalise(&mCam, "mountain.raw", "Terrian");
+
+		/*
+			=============
+			[ GEO SHAPE ]
+			=============
+		*/
+		geoShape = new GeoShape;
+		geoShape->program = ShaderLoader::CreateProgram("Resources/Shaders/GeometryShader.vs", "Resources/Shaders/GeometryShader.fs", "Resources/Shaders/GeometryShader.gs");
+		//geoShape->Initalize();
 
 		/*
 			========
