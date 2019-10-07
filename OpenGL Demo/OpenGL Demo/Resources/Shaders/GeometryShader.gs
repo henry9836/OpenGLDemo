@@ -1,7 +1,8 @@
 #version 430 core 
 
 layout (points) in;
-layout (line_strip, max_vertices = 11) out;
+layout (triangle_strip, max_vertices = 23) out;
+
 out vec3 outColor;
 
 in VS_GS_VERTEX{ 
@@ -16,44 +17,82 @@ void main() {
  
 	outColor = gs_in[0].color;
 	
-	gl_Position = gs_in[0].position + gs_in[0].mvp * vec4(0.15f, 0.25, 0.0f, 0.0f);
-	EmitVertex();
-	
-	//top point
-	gl_Position = gs_in[0].position + gs_in[0].mvp * vec4(0.0f, 0.75f, 0.0f, 0.0f);
-	EmitVertex();
-	
-	
+	//Top Triangle
 	gl_Position = gs_in[0].position + gs_in[0].mvp * vec4(-0.15f, 0.25f, 0.0f, 0.0f);
 	EmitVertex();
 	
-	//left top
-	gl_Position = gs_in[0].position + gs_in[0].mvp * vec4(-0.5f, 0.35f, 0.0f, 0.0f);
+	gl_Position = gs_in[0].position + gs_in[0].mvp * vec4(0.15f, 0.25f, 0.0f, 0.0f);
 	EmitVertex();
 	
-	gl_Position = gs_in[0].position + gs_in[0].mvp * vec4(-0.25f, -0.15f, 0.0f, 0.0f);
+	gl_Position = gs_in[0].position + gs_in[0].mvp * vec4(0.0f, 0.75f, 0.0f, 0.0f);
 	EmitVertex();
+	EndPrimitive();
 	
-	gl_Position = gs_in[0].position + gs_in[0].mvp * vec4(-0.35f, -0.75f, 0.0f, 0.0f);
-	EmitVertex();
-	
-	gl_Position = gs_in[0].position + gs_in[0].mvp * vec4(-0.0f, -0.35f, 0.0f, 0.0f);
-	EmitVertex();
-	
-	gl_Position = gs_in[0].position + gs_in[0].mvp * vec4(0.35f, -0.75f, 0.0f, 0.0f);
+	//Top Right Triangle
+	gl_Position = gs_in[0].position + gs_in[0].mvp * vec4(0.15f, 0.25, 0.0f, 0.0f);
 	EmitVertex();
 	
 	gl_Position = gs_in[0].position + gs_in[0].mvp * vec4(0.25f, -0.15f, 0.0f, 0.0f);
 	EmitVertex();
 	
-		//left top
-	gl_Position = gs_in[0].position + gs_in[0].mvp * vec4(0.5f, 0.35f, 0.0f, 0.0f);
+	gl_Position = gs_in[0].position + gs_in[0].mvp * vec4(0.65f, 0.25f, 0.0f, 0.0f);
+	EmitVertex();
+	EndPrimitive();
+	//Bottom Right Triangle
+	gl_Position = gs_in[0].position + gs_in[0].mvp * vec4(0.25f, -0.15f, 0.0f, 0.0f);
 	EmitVertex();
 	
-	gl_Position = gs_in[0].position + gs_in[0].mvp * vec4(0.15f, 0.25, 0.0f, 0.0f);
+	gl_Position = gs_in[0].position + gs_in[0].mvp * vec4(0.0f, -0.35f, 0.0f, 0.0f);
 	EmitVertex();
 	
-
+	gl_Position = gs_in[0].position + gs_in[0].mvp * vec4(0.45f, -0.75f, 0.0f, 0.0f);
+	EmitVertex();
+	EndPrimitive();
 	
+	//Bottom Left Triangle
+	gl_Position = gs_in[0].position + gs_in[0].mvp * vec4(0.0f, -0.35f, 0.0f, 0.0f);
+	EmitVertex();
+	
+	gl_Position = gs_in[0].position + gs_in[0].mvp * vec4(-0.25f, -0.15f, 0.0f, 0.0f);
+	EmitVertex();
+	
+	gl_Position = gs_in[0].position + gs_in[0].mvp * vec4(-0.45f, -0.75f, 0.0f, 0.0f);
+	EmitVertex();
+	EndPrimitive();
+	
+	//Top Left Triangle
+	gl_Position = gs_in[0].position + gs_in[0].mvp * vec4(-0.25f, -0.15f, 0.0f, 0.0f);
+	EmitVertex();
+	
+	gl_Position = gs_in[0].position + gs_in[0].mvp * vec4(-0.15f, 0.25f, 0.0f, 0.0f);
+	EmitVertex();
+	
+	gl_Position = gs_in[0].position + gs_in[0].mvp * vec4(-0.65f, 0.25f, 0.0f, 0.0f);
+	EmitVertex();
+	EndPrimitive();
+	
+	//Bottom Inside Triangle
+	gl_Position = gs_in[0].position + gs_in[0].mvp * vec4(0.0f, -0.35f, 0.0f, 0.0f);
+	EmitVertex();
+	
+	gl_Position = gs_in[0].position + gs_in[0].mvp * vec4(0.25f, -0.15f, 0.0f, 0.0f);
+	EmitVertex();
+	
+	gl_Position = gs_in[0].position + gs_in[0].mvp * vec4(-0.25f, -0.15f, 0.0f, 0.0f);
+	EmitVertex();
+	EndPrimitive();
+	
+	//Final Quad
+	gl_Position = gs_in[0].position + gs_in[0].mvp * vec4(-0.25f, -0.15f, 0.0f, 0.0f);
+	EmitVertex();
+	
+	gl_Position = gs_in[0].position + gs_in[0].mvp * vec4(0.25f, -0.15f, 0.0f, 0.0f);
+	EmitVertex();
+	
+	gl_Position = gs_in[0].position + gs_in[0].mvp * vec4(-0.15f, 0.25f, 0.0f, 0.0f);
+	EmitVertex();
+	
+	gl_Position = gs_in[0].position + gs_in[0].mvp * vec4(0.15f, 0.25f, 0.0f, 0.0f);
+	EmitVertex();
 	EndPrimitive();
 }
