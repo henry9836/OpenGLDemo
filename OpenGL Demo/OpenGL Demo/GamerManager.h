@@ -34,6 +34,7 @@ public:
 	bool leave = false;
 	bool caminManual = false;
 	bool wireFrame = false;
+	bool POST = false;
 	
 };
 

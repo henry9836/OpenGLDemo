@@ -138,9 +138,10 @@ GLfloat backVerts[] = {
 //Render function displays everything on the screen
 void Render() {
 
-
-	glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer->buffer);
-	glEnable(GL_DEPTH_TEST);
+	if (m_Game.POST) {
+		glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer->buffer);
+		glEnable(GL_DEPTH_TEST);
+	}
 
 	glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 	
@@ -276,8 +277,9 @@ void Render() {
 		//mCam.SwitchMode(mCam.FOLLOW_ORBIT, tankModel->position, glm::vec3(-15.0f, 5.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), 5.0f, 5.0f);
 		mCam.SwitchMode(mCam.FOLLOW, glm::vec3(tankModel->position.x - 30.0f, tankModel->position.y, tankModel->position.z), glm::vec3(-5.0f, 5.0f, 1.0f), glm::vec3(50.0f, 0.0f, 0.0f), 1.0f, 50.0f);
 		//mCam.camPos = glm::vec3(tankModel->position.x - 10.0f, tankModel->position.y + 5.0f, tankModel->position.z + 1.0f);
-
-		frameBuffer->Render(currentTime);
+		if (m_Game.POST) {
+			frameBuffer->Render(currentTime);
+		}
 
 	}
 	glStencilMask(0x00);
@@ -514,9 +516,9 @@ int main(int argc, char** argv) {
 			========
 		*/
 
-		mainTextBack = TextLabel(mScreen, "OpenGL Demo\n (Enable/Disable)\n 1/2 Stencil Test\n q/w Scissor Test\n a/s Depth Test\n m/o Manual/Orbit Camera Mode\n z/x Wireframe \n r - Reset Demo\n esc - Quit Demo", "Resources/Fonts/TerminusTTF-4.47.0.ttf", glm::vec2(-850.0f, 450.0f));
+		mainTextBack = TextLabel(mScreen, "OpenGL Demo\n (Enable/Disable)\n 1/2 Stencil Test\n q/w Scissor Test\n a/s Depth Test\n m/o Manual/Orbit Camera Mode\n z/x Wireframe \n Frame Buffer 7/8\n r - Reset Demo\n esc - Quit Demo", "Resources/Fonts/TerminusTTF-4.47.0.ttf", glm::vec2(-850.0f, 450.0f));
 		camControlTextBack = TextLabel(mScreen, "Camera Controls\n y - Forwards\n h - Backwards\n g - Left\n j - Right", "Resources/Fonts/TerminusTTF-4.47.0.ttf", glm::vec2(500.0f, 450.0f));
-		mainText = TextLabel(mScreen, "OpenGL Demo\n (Enable/Disable)\n 1/2 Stencil Test\n q/w Scissor Test\n a/s Depth Test\n m/o Manual/Orbit Camera Mode\n z/x Wireframe\n r - Reset Demo\n esc - Quit Demo", "Resources/Fonts/TerminusTTF-4.47.0.ttf", glm::vec2(-850.0f, 450.0f));
+		mainText = TextLabel(mScreen, "OpenGL Demo\n (Enable/Disable)\n 5/6 Stencil Test\n t/y Scissor Test\n g/h Depth Test\n m/o Manual/Orbit Camera Mode\n b/n Wireframe\n Frame Buffer 7/8\n r - Reset Demo\n esc - Quit Demo", "Resources/Fonts/TerminusTTF-4.47.0.ttf", glm::vec2(-850.0f, 450.0f));
 		camControlText = TextLabel(mScreen, "Camera Controls\n y - Forwards\n h - Backwards\n g - Left\n j - Right", "Resources/Fonts/TerminusTTF-4.47.0.ttf", glm::vec2(500.0f, 450.0f));
 		mainText.SetScale(static_cast<GLfloat>(1.0)); 
 		camControlText.SetScale(static_cast<GLfloat>(1.0));

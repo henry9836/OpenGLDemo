@@ -88,6 +88,7 @@ public:
 		glBindVertexArray(this->VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 6);
 		glBindVertexArray(0);
+		glEnable(GL_DEPTH_TEST);
 	};
 
 	GLuint RBO;
