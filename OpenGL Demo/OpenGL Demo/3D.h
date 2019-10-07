@@ -359,8 +359,8 @@ public:
 			
 			if (image == nullptr) {
 				Console_OutputLog(L"Could not load height map with SOIL defaulting to 512x512 image size", LOGWARN);
-				w = 512;
-				h = 512;
+				w = 513;
+				h = 513;
 			}
 
 			totalSize = w * h;
@@ -485,6 +485,7 @@ public:
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		SOIL_free_image_data(image);
 		glBindTexture(GL_TEXTURE_2D, 0);
+		glDisable(GL_BLEND);
 
 		glGenVertexArrays(1, &this->VAO);
 		glBindVertexArray(this->VAO);
@@ -501,20 +502,18 @@ public:
 		glEnableVertexAttribArray(0);
 
 		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
-		glEnableVertexAttribArray(0);
+		glEnableVertexAttribArray(1);
 
 		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(GLfloat), (GLvoid*)(6 * sizeof(GLfloat)));
-		glEnableVertexAttribArray(0);
-
-		/*glGenTextures(1, &this->texture);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, this->texture);*/
+		glEnableVertexAttribArray(2); // REMEMBER UR INDICES
 
 		//Create program
 
 		//this->program = ShaderLoader::CreateProgram("Resources/Shaders/3DObjectColor.vs", "Resources/Shaders/3DObjectColor.fs");
 		//this->program = ShaderLoader::CreateProgram("Resources/Shaders/Basic.vs", "Resources/Shaders/Basic.fs"); //Renders 2D
-		//this->program = ShaderLoader::CreateProgram("Resources/Shaders/Basic3D.vs", "Resources/Shaders/Basic3D.fs"); //Render a WTF
-		this->program = ShaderLoader::CreateProgram("Resources/Shaders/heightmap.vs", "Resources/Shaders/heightmap.fs");
+		//this->program = ShaderLoader::CreateProgram("Resources/Shaders/Basic3D.vs", "Resources/Shaders/Basic3D.fs"); //Render
+		this->program = ShaderLoader::CreateProgram("Resources/Shaders/3DObject_Diffuse.vs", "Resources/Shaders/3DObject_BlinnPhong.fs");
+		//this->program = ShaderLoader::CreateProgram("Resources/Shaders/3DObject_Diffuse.vs", "Resources/Shaders/3DObject_DiffuseColor.fs");
 
 		Console_OutputLog(to_wstring("Terrian: " + _name + " Initalised"), LOGINFO);
 
@@ -524,37 +523,42 @@ public:
 	void Render(Camera* camera) {
 
 		glUseProgram(this->program);
+		glBindVertexArray(this->VAO);
+
 		glm::mat4 model;
 		glm::mat4 translationMatrix = glm::translate(glm::mat4(), position);
 		glm::mat4 rotationZ = glm::rotate(glm::mat4(), glm::radians(this->rotationAngle), this->rotationAxisZ);
 		glm::mat4 scaleMatrix = glm::scale(glm::mat4(), scale);
 		model = translationMatrix * rotationZ * scaleMatrix;
-		glm::mat4 mvp = camera->proj * camera->view * glm::scale(glm::mat4(), scale);
+		glm::mat4 mvp = camera->proj * camera->view * model;
 		glm::vec3 camPos = camera->camPos;
 
 		//POSITION AND SCALE
 		glm::mat4 projCalc = camera->proj * camera->view * model;
 
-		GLint mvpLoc = glGetUniformLocation(program, "proj_calc");
-		glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(projCalc));
-		GLint mvpLoc2 = glGetUniformLocation(program, "vp");
-		glUniformMatrix4fv(mvpLoc2, 1, GL_FALSE, glm::value_ptr(projCalc));
-		GLint modelPass = glGetUniformLocation(program, "model");
-		glUniformMatrix4fv(modelPass, 1, GL_FALSE, glm::value_ptr(model));
-
-		glBindVertexArray(this->VAO);
-
 		//PATCH
 
-		/*glEnable(GL_BLEND);
+		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, this->texture);
 
-		glUniform1i(glGetUniformLocation(this->program, "Tex"), 0);
-*/
+		glUniform1i(glGetUniformLocation(this->program, "texture_diffuse1"), 0);
+
+
 		//PATCH END
+		GLint mvpLoc = glGetUniformLocation(program, "proj_calc");
+		glUniformMatrix4fv(mvpLoc, 1, GL_FALSE, glm::value_ptr(projCalc));
+		//GLint mvpLoc2 = glGetUniformLocation(program, "vp");
+		//glUniformMatrix4fv(mvpLoc2, 1, GL_FALSE, glm::value_ptr(projCalc));
+		GLint modelPass = glGetUniformLocation(program, "model");
+		glUniformMatrix4fv(modelPass, 1, GL_FALSE, glm::value_ptr(model));
+		GLint camPosPass = glGetUniformLocation(program, "camPos");
+		glUniformMatrix3fv(camPosPass, 1, GL_FALSE, glm::value_ptr(camPos));
+
+
+		
 
 		glDrawElements(GL_TRIANGLES, this->TerrianIndices.size(), GL_UNSIGNED_INT, 0);
 		glDisable(GL_CULL_FACE);
@@ -563,43 +567,6 @@ public:
 		//Clearing the vertex array
 		glBindVertexArray(0);
 		glUseProgram(0);
-
-
-		//John
-
-		//glUseProgram(this->program);
-
-		////Binding the array
-		//glBindVertexArray(VAO);
-
-		////Enable blending
-		//glEnable(GL_BLEND);
-		//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-		////Setting and binding the correct texture
-		////glActiveTexture(GL_TEXTURE0);
-		////glBindTexture(GL_TEXTURE_2D, TerrainTexture);
-
-		////Sending the texture to the GPU via uniform
-		////glUniform1i(glGetUniformLocation(TerrainShader, "tex"), 0);
-
-		////SetUniforms();
-		////Drawing the entity
-
-		////Setting back face culling
-		//glEnable(GL_CULL_FACE);
-		//glCullFace(GL_BACK);
-		//glFrontFace(GL_CW);
-		////glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		//glDrawElements(GL_TRIANGLES, this->TerrianIndices.size(), GL_UNSIGNED_INT, 0);
-		////glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		//glDisable(GL_CULL_FACE);
-		//glDisable(GL_BLEND);
-
-		////Clearing the vertex array
-		//glBindVertexArray(0);
-		//glUseProgram(0);
-		////RenderGrass();
 
 	}
 

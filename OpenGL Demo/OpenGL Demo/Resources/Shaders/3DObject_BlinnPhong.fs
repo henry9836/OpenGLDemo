@@ -32,4 +32,8 @@ void main()
    vec3 specular = lightSpecStr * spec * lightColor;
 
    color = vec4(ambient + diffuse + specular, 1.0f) * (texture(texture_diffuse1, fragTexCoord));
+   // DEBUG
+   //color = vec4(ambient + diffuse + specular,1);
+   //color = vec4(fragTexCoord,0,1);
+   //color = vec4(ambient + diffuse,1);
 }

@@ -347,7 +347,7 @@ int main(int argc, char** argv) {
 
 		mainModels.push_back(new Model("Resources/Models/BasicCube/Cube.obj", &mCam, "Fog Cube", rotationAngle, glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(10.0f, 1.0f, 1.0f), glm::vec3(0.5f, 0.5f, 0.5f), "Resources/Shaders/3DObjectFog.vs", "Resources/Shaders/3DObjectFog.fs"));
 
-		mainModels.push_back(new Model("Resources/Models/Tank/Tank.obj", &mCam, "Tank", rotationAngle, glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), "Resources/Shaders/3DObjectFog.vs", "Resources/Shaders/3DObjectFog.fs"));
+		mainModels.push_back(new Model("Resources/Models/Tank/Tank.obj", &mCam, "Tank", rotationAngle, glm::vec3(0.0f, 1.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.5f, 0.5f, 0.5f), "Resources/Shaders/3DObject_Diffuse.vs", "Resources/Shaders/3DObject_BlinnPhong.fs"));
 
 		/*
 			============
