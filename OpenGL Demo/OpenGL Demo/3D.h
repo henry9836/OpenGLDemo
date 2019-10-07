@@ -337,40 +337,51 @@ public:
 
 	float getHeight(float x, float z)const
 	{
-		// Transform from terrain local space to "cell" space.
-		float c = (x + 0.5f * width()) / 1;
-		float d = (z - 0.5f * depth()) / -1;
+		try {
+			// Transform from terrain local space to "cell" space.
+			float c = (x + 0.5f * width()) / 1;
+			float d = (z - 0.5f * depth()) / -1;
 
-		// Get the row and column we are in.
-		int row = (int)floorf(d);
-		int col = (int)floorf(c);
+			// Get the row and column we are in.
+			int row = (int)floorf(d);
+			int col = (int)floorf(c);
 
-		// Grab the heights of the cell we are in.
-		// A*--*B
-		//  | /|
-		//  |/ |
-		// C*--*D
-		float A = heightInfo[row * this->imageSize.x + col];
-		float B = heightInfo[row * this->imageSize.x + col + 1];
-		float C = heightInfo[(row + 1) * this->imageSize.x + col];
-		float D = heightInfo[(row + 1) * this->imageSize.x + col + 1];
+			if (row >= 0 && col >= 0) {
 
-		// Where we are relative to the cell.
-		float s = c - (float)col;
-		float t = d - (float)row;
+				// Grab the heights of the cell we are in.
+				// A*--*B
+				//  | /|
+				//  |/ |
+				// C*--*D
+				float A = heightInfo[row * this->imageSize.x + col];
+				float B = heightInfo[row * this->imageSize.x + col + 1];
+				float C = heightInfo[(row + 1) * this->imageSize.x + col];
+				float D = heightInfo[(row + 1) * this->imageSize.x + col + 1];
 
-		// If upper triangle ABC.
-		if (s + t <= 1.0f)
-		{
-			float uy = B - A;
-			float vy = C - A;
-			return A + s * uy + t * vy;
+				// Where we are relative to the cell.
+				float s = c - (float)col;
+				float t = d - (float)row;
+
+				// If upper triangle ABC.
+				if (s + t <= 1.0f)
+				{
+					float uy = B - A;
+					float vy = C - A;
+					return A + s * uy + t * vy;
+				}
+				else // lower triangle DCB.
+				{
+					float uy = C - D;
+					float vy = B - D;
+					return D + (1.0f - s) * uy + (1.0f - t) * vy;
+				}
+			}
+			else {
+				return 0;
+			}
 		}
-		else // lower triangle DCB.
-		{
-			float uy = C - D;
-			float vy = B - D;
-			return D + (1.0f - s) * uy + (1.0f - t) * vy;
+		catch (...) {
+			return 0;
 		}
 	}
 
@@ -530,7 +541,7 @@ public:
 
 		int width, height;
 
-		unsigned char* image = SOIL_load_image("Resources/Textures/Box.png", &width, &height, 0, SOIL_LOAD_RGBA);
+		unsigned char* image = SOIL_load_image("Resources/Textures/map.png", &width, &height, 0, SOIL_LOAD_RGBA);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image);
 
 		glEnable(GL_BLEND);
@@ -664,7 +675,13 @@ public:
 	
 	void Render(Camera* cam) {
 		glUseProgram(program);
-		glm::mat4 model; model = glm::translate(model, position);
+
+		glm::mat4 model;
+		glm::mat4 translationMatrix = glm::translate(glm::mat4(), position);
+		glm::mat4 rotationZ = glm::rotate(glm::mat4(), glm::radians(this->rotationAngle), this->rotationAxisZ);
+		glm::mat4 scaleMatrix = glm::scale(glm::mat4(), scale);
+		model = translationMatrix * rotationZ * scaleMatrix;
+
 		glm::mat4 mvp = cam->proj * cam->view * model;
 		GLint vpLoc = glGetUniformLocation(program, "mvp");
 		glUniformMatrix4fv(vpLoc, 1, GL_FALSE, glm::value_ptr(mvp));
@@ -675,5 +692,8 @@ public:
 
 	GLuint VAO, VBO, EBO;
 	glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
+	glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f);
+	glm::vec3 rotationAxisZ = glm::vec3(1.0f, 0.0f, 0.0f);
+	float rotationAngle = 90;
 	GLuint program;
 };

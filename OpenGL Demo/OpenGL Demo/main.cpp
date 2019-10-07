@@ -266,8 +266,9 @@ void Render() {
 		float floorPos = terrian->position.y + terrian->getHeight(tankModel->position.x,tankModel->position.z);
 
 		tankModel->position = glm::vec3(tankModel->position.x, floorPos, tankModel->position.z);
-		mCam.SwitchMode(mCam.FOLLOW_ORBIT, tankModel->position, glm::vec3(-15.0f, 5.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), 5.0f, 5.0f);
-		mCam.camPos = glm::vec3(tankModel->position.x - 10.0f, tankModel->position.y + 5.0f, tankModel->position.z + 1.0f);
+		//mCam.SwitchMode(mCam.FOLLOW_ORBIT, tankModel->position, glm::vec3(-15.0f, 5.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), 5.0f, 5.0f);
+		mCam.SwitchMode(mCam.FOLLOW, glm::vec3(tankModel->position.x - 30.0f, tankModel->position.y, tankModel->position.z), glm::vec3(-5.0f, 5.0f, 1.0f), glm::vec3(50.0f, 0.0f, 0.0f), 1.0f, 50.0f);
+		//mCam.camPos = glm::vec3(tankModel->position.x - 10.0f, tankModel->position.y + 5.0f, tankModel->position.z + 1.0f);
 
 
 
