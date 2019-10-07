@@ -28,7 +28,6 @@
 #include "ConsoleController.h"
 #include "3D.h"
 #include "AI.h"
-#include "GeoModel.h"
 
 using namespace std;
 
@@ -45,7 +44,6 @@ GameManager m_Game;
 ObjectManager objManager;
 LoadTexture textureLoader;
 Terrain* terrian;
-GeoModel* geoModel;
 
 //3D Objects
 Simple3DObject cubeModel;
@@ -206,8 +204,6 @@ void Render() {
 	if (!m_Game.gameover && m_Game.currentScreen == m_Game.MAIN) {
 
 		terrian->Render(&mCam);
-
-		//geoModel->Render(&mCam);
 
 		for (size_t i = 0; i < menuSprites.size(); i++)
 		{
@@ -482,13 +478,6 @@ int main(int argc, char** argv) {
 		terrian = new Terrain;
 		terrian->Initalise(&mCam, "mountain.raw", "Terrian");
 
-		/*
-			=============
-			[ GEO MODEL ]
-			=============
-		*/
-		geoModel = new GeoModel;
-		geoModel->Initialize();
 		/*
 			========
 			[ TEXT ]

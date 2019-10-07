@@ -167,7 +167,6 @@
     <ClInclude Include="ConsoleController.h" />
     <ClInclude Include="ft2build.h" />
     <ClInclude Include="GamerManager.h" />
-    <ClInclude Include="GeoModel.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="ModelMesh.h" />
