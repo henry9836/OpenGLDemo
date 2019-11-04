@@ -76,14 +76,19 @@ void GameManager::CheckGeneralInput(GameManager& m_game, Camera& camera, glm::ve
 			wireFrame = false;
 		}
 		else if (m_Input.CheckKeyDown('7')) { //wireframe
-			Console_OutputLog(L"Frame Buffer [ON]", LOGINFO);
-
-			POST = true;
+			Console_OutputLog(L"Frame Buffer [OFF]", LOGINFO);
+			POSTG = false;
+			POST = false;
 		}
 		else if (m_Input.CheckKeyDown('8')) { //wireframe
-			Console_OutputLog(L"Frame Buffer [OFF]", LOGINFO);
-
-			POST = false;
+			Console_OutputLog(L"Frame Buffer [ON]", LOGINFO);
+			POSTG = false;
+			POST = true;
+		}
+		else if (m_Input.CheckKeyDown('9')) { //wireframe
+			Console_OutputLog(L"Frame Buffer [ON]", LOGINFO);
+			POSTG = true;
+			POST = true;
 		}
 		else if (m_Input.CheckKeyDown('o')) { //orbit mode
 			mCam->SwitchMode(Camera::ORBIT, orbittar, glm::vec3(-5.0f, 3.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), 5.0f, 5.0f);

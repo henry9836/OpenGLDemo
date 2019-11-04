@@ -8,6 +8,6 @@
 class ScreenInfo
 {
 public:
-	GLint SCR_WIDTH = 1920;
-	GLint SCR_HEIGHT = 1080;
+	GLint SCR_WIDTH = 1500;
+	GLint SCR_HEIGHT = 900;
 };

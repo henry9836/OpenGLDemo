@@ -48,7 +48,7 @@ public:
 
 		//Create program
 		program = ShaderLoader::CreateProgram("Resources/Shaders/POST.vs", "Resources/Shaders/POST.fs");
-
+		program2 = ShaderLoader::CreateProgram("Resources/Shaders/POSTMOAR.vs", "Resources/Shaders/POSTMOAR.fs");
 		//Set up the RBO
 		glGenFramebuffers(1, &buffer);
 		glBindFramebuffer(GL_FRAMEBUFFER, buffer);
@@ -73,15 +73,19 @@ public:
 	};
 
 	//Render Frame Buffer
-	void Render(float currentTime) {
+	void Render(float currentTime, bool glitchEffect) {
+		if (glitchEffect) {
+			glUseProgram(this->program2);
+		}
+		else {
+			glUseProgram(this->program);
+		}
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glDisable(GL_DEPTH_TEST); 
 
-		glUseProgram(this->program);
 		glActiveTexture(GL_TEXTURE0);
 
-		GLint currentTimeLoc = glGetUniformLocation(this->program, "currentTime");
-		glUniform1f(currentTimeLoc, currentTime);
+		glUniform1f(glGetUniformLocation(this->program, "currentTime"), currentTime);
 		glUniform1i(glGetUniformLocation(this->program, "renderTexture"), 0);
 		glBindTexture(GL_TEXTURE_2D, this->textureBuffer);
 
@@ -95,6 +99,7 @@ public:
 	GLuint buffer;
 	GLuint textureBuffer;
 	GLuint program;
+	GLuint program2;
 
 private:
 	GLuint VAO;

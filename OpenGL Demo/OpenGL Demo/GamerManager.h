@@ -35,6 +35,7 @@ public:
 	bool caminManual = false;
 	bool wireFrame = false;
 	bool POST = false;
+	bool POSTG = false;
 	
 };
 
