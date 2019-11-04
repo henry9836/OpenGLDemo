@@ -9,6 +9,8 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include <fstream>
+#include <stdlib.h>
+#include <time.h>    
 
 #include "Camera.h"
 #include "ShaderLoader.h"
@@ -342,13 +344,67 @@ public:
 		return avg / num;
 	}
 
-	//float random(float x, float y) {
-	//	int n = x + y * 57;
-	//	n = (n << 13) ^ n; 
-	//	int t = (n * (n * n * 15731 + 789221) + 1376312589) & 0x7fffffff; 
-	//	return 1.0 - double(t) * 0.931322574615478515625e-9;
-	//}
+	//generate noise at point
+	float random(float x, float y) {
 
+		//int n = x + y * 57;
+		int n = x + y * randomNum;
+		n = (n << 13) ^ n; 
+		int t = (n * (n * n * 15731 + 789221) + 1376312589) & 0x7fffffff; 
+		return 1.0 - double(t) * 0.931322574615478515625e-9;
+	}
+
+	//Interpolate point
+	float interpolate(float a, float b, float x) {
+		return a * (1 - x) + b * x;
+	}
+
+	//Smooth Noise
+	float smoothNoise(float x, float y) {
+		float corners;
+		float sides;
+		float center;
+
+
+		corners = (random(x - 1, y - 1) + random(x + 1, y - 1) + random(x - 1, y + 1) + random(x + 1, y + 1)) / 16;
+		sides = (random(x - 1, y) + random(x + 1, y) + random(x, y - 1) + random(x, y + 1)) / 8;
+		center = random(x,y) / 4;
+
+		return (corners + sides + center);
+	}
+
+	//Generate Perlin Noise
+	float noise(float x, float y) {
+		float fractional_X = x - int(x); 
+		float fractional_Y = y - int(y);
+
+		//smooths 
+		float v1 = smoothNoise(int(x), int(y));
+		float v2 = smoothNoise(int(x) + 1, int(y));
+		float v3 = smoothNoise(int(x), int(y) + 1);
+		float v4 = smoothNoise(int(x) + 1, int(y) + 1);
+
+		// interpolates 
+		float i1 = interpolate(v1, v2, fractional_X); 
+		float i2 = interpolate(v3, v4, fractional_X);
+
+		return interpolate(i1, i2, fractional_Y);
+	}
+
+	//Generate Perlin Noise
+	float totalNoisePerPoint(float x, float y) {
+		int octaves = 8; float zoom = 20.0f; 
+		float persistence = 0.5f; 
+		float total = 0.0f;
+
+		for (int i = 0; i < octaves - 1; i++) {
+			float frequency = pow(2, i) / zoom; 
+			float amplitude = pow(persistence, i);
+			total += noise(x * frequency, y * frequency) * amplitude;
+		} 
+		
+		return total;
+	}
 
 	//Smooth out the terrain
 	void smoothTerrain() {
@@ -372,9 +428,9 @@ public:
 		// Estimate normals for interior nodes using central difference.
 		float invTwoDX = 1.0f / (2.0f * 1.0f);
 		float invTwoDZ = 1.0f / (2.0f * 1.0f);
-		for (int i = 2; i < this->imageSize.y; ++i)
+		for (int i = 2; i < this->imageSize.y - 1; ++i)
 		{
-			for (int j = 2; j < this->imageSize.x; ++j)
+			for (int j = 2; j < this->imageSize.x - 1; ++j)
 			{
 				float t = this->heightInfo[(i - 1) * (int)this->imageSize.x + j];
 				float b = this->heightInfo[(i + 1) * (int)this->imageSize.x + j];
@@ -453,14 +509,15 @@ public:
 		}
 	}
 
-	void Initalise(Camera* _cam, std::string _pathToHeightMap, std::string _name) {
+	void Initalise(Camera* _cam, std::string _pathToHeightMap, std::string _name, bool randomGen, glm::vec2 _size, float _heightScale) {
 		Console_OutputLog(to_wstring("Initalising Terrain: " + _name), LOGINFO);
 
 		this->name = _name;
 		this->camera = _cam;
 		
+		this->randomNum = rand() % 100 + 13;
 
-		float heightScale = 0.5f;
+		float heightScale = _heightScale;
 		
 
 		//Create Vertcies and Indices
@@ -468,61 +525,92 @@ public:
 
 		int totalSize = 0;
 
-		//Get Info From Map
-		ifstream heightMap;
-		heightMap.open(_pathToHeightMap.c_str(), std::ios_base::binary);
-		if (heightMap.fail())
-		{
-			Console_OutputLog(L"Could not load height map", LOGWARN);
-			return;
-		}
-		else {
-			//Get Image Size
-			
-			int w = 0, h = 0;
-
-			unsigned char* image = SOIL_load_image
-			(
-				_pathToHeightMap.c_str(),
-				&w, &h, 0,
-				SOIL_LOAD_L
-			);
-			
-			if (image == nullptr) {
-				Console_OutputLog(L"Could not load height map with SOIL defaulting to 512x512 image size", LOGWARN);
-				w = 513;
-				h = 513;
-			}
-
-			totalSize = w * h;
-
-			//Resize vectors to image size
-
+		if (randomGen) {
+			totalSize = _size.x * _size.y;
 			this->rawData.resize(totalSize);
-			this->heightInfo.resize(totalSize * 2);
-
+			//this->heightInfo.resize(totalSize * 2);
+			//For each y
+			for (size_t y = 0; y < _size.y; y++)
+			{
+				//For each x
+				for (size_t x = 0; x < _size.x; x++)
+				{
+					//Generate Perlin Noise On Point
+					//this->rawData.push_back(totalNoisePerPoint(x, y));
+					this->heightInfo.push_back(totalNoisePerPoint(x, y));
+				}
+			}
+			//Make a fake image size
 			this->imageSize.x = (GLfloat)sqrt(this->rawData.size());
 			this->imageSize.y = this->imageSize.x;
 
+			//scale heightmap
+			for (UINT i = 0; i < heightInfo.size(); ++i)
+			{
+				if (heightInfo[i] != 0) {
+					heightInfo[i] = (heightInfo[i] * heightScale) + 100;
+				}
+			}
+		}
+		else {
+			//Get Info From Map
+			ifstream heightMap;
+			heightMap.open(_pathToHeightMap.c_str(), std::ios_base::binary);
+			if (heightMap.fail())
+			{
+				Console_OutputLog(L"Could not load height map", LOGWARN);
+				return;
+			}
+			else {
+				//Get Image Size
+
+				int w = 0, h = 0;
+
+				unsigned char* image = SOIL_load_image
+				(
+					_pathToHeightMap.c_str(),
+					&w, &h, 0,
+					SOIL_LOAD_L
+				);
+
+				if (image == nullptr) {
+					Console_OutputLog(L"Could not load height map with SOIL defaulting to 512x512 image size", LOGWARN);
+					w = 513;
+					h = 513;
+				}
+
+				totalSize = w * h;
+
+				//Resize vectors to image size
+
+				this->rawData.resize(totalSize);
+				this->heightInfo.resize(totalSize * 2);
+
+				this->imageSize.x = (GLfloat)sqrt(this->rawData.size());
+				this->imageSize.y = this->imageSize.x;
+
+				heightMap.close();
+
+				heightMap.open(_pathToHeightMap.c_str(), std::ios_base::binary);
+
+				//Put map info into vector
+
+				heightMap.read((char*)& this->rawData[0], (std::streamsize)this->rawData.size());
+			}
+
 			heightMap.close();
 
-			heightMap.open(_pathToHeightMap.c_str(), std::ios_base::binary);
 
-			//Put map info into vector
+			for (UINT i = 0; i < rawData.size(); ++i)
+			{
+				if (heightInfo[i] != 0) {
+					heightInfo[i] = ((float)rawData[i] * heightScale) + 100;
+				}
+			}
 
-			heightMap.read((char*)&this->rawData[0], (std::streamsize)this->rawData.size());
+			//smooth terrian
+			smoothTerrain();
 		}
-
-		heightMap.close();
-
-
-		for (UINT i = 0; i < rawData.size(); ++i)
-		{
-			heightInfo[i] = (float)rawData[i] * heightScale;
-		}
-
-		smoothTerrain();
-
 		//Create Vertices From HeightInfo
 
 		int row = 0;
@@ -705,6 +793,7 @@ public:
 	glm::vec3 position = glm::vec3(0.0f, -150.0f, 0.0f);
 
 private:
+	int randomNum = 57;
 	std::string name = "Untitled Terrian";
 	glm::mat4 model;
 	glm::mat4 projCalc;

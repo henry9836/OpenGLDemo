@@ -309,6 +309,9 @@ void Update() {
 int main(int argc, char** argv) {
 	
 	/*try {*/
+		
+		srand(time(NULL));
+		
 		Console_Initalize(); //Show Console Controller Banner
 
 		Console_OutputLog(L"Initializing Game...", LOGINFO);
@@ -491,7 +494,8 @@ int main(int argc, char** argv) {
 			==========
 		*/
 		terrian = new Terrain;
-		terrian->Initalise(&mCam, "mountain.raw", "Terrian");
+		//terrian->Initalise(&mCam, "mountain.raw", "Terrian", false, glm::vec2(0,0), 0.5);
+		terrian->Initalise(&mCam, "mountain.raw", "Terrian", true, glm::vec2(500, 500), 10);
 
 		/*
 			=============

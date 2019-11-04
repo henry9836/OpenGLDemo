@@ -99,19 +99,15 @@ void GameManager::CheckGeneralInput(GameManager& m_game, Camera& camera, glm::ve
 			caminManual = true;
 		}
 		if (m_Input.CheckKeyDown('w')) { //go forward
-			//mCam->camPos += glm::vec3(1.0f, 0.0f, 0.0f);
 			player->position += glm::vec3(1.0f, 0.0f, 0.0f);
 		}
 		if (m_Input.CheckKeyDown('s')) { //go back
-			//mCam->camPos -= glm::vec3(1.0f, 0.0f, 0.0f);
 			player->position -= glm::vec3(1.0f, 0.0f, 0.0f);
 		}
 		if (m_Input.CheckKeyDown('a')) { //go left
-			//mCam->camPos -= glm::vec3(0.0f, 0.0f, 1.0f);
 			player->position -= glm::vec3(0.0f, 0.0f, 1.0f);
 		}
 		if (m_Input.CheckKeyDown('d')) { //go right
-			//mCam->camPos += glm::vec3(0.0f, 0.0f, 1.0f);
 			player->position += glm::vec3(0.0f, 0.0f, 1.0f);
 		}
 		break;
