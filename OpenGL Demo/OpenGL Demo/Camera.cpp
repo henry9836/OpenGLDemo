@@ -49,6 +49,9 @@ void Camera::Tick(ScreenInfo m_Screen, float deltaTime)
 					camPos.y = camFollowTar.y + height;
 					camPos.z = camFollowTar.z;
 				}
+				camFrontDir = glm::normalize(camPos - camTar);
+				camRightDir = glm::normalize(glm::cross(camUpDir, camFollowTar));
+				camUpDir = glm::normalize(glm::cross(camLookDir, camRightDir));
 			}
 		}
 		view = glm::lookAt(camPos, camTar, camUpDir);
@@ -203,6 +206,22 @@ glm::mat4 Camera::getMVP(glm::vec3 postion, glm::vec3 scale, glm::mat4 rotationZ
 	glm::mat4 backModel = backTranslationMatrix * rotationZ * scaleMatrixBack;
 	glm::mat4 backProj_calc = proj * view * backModel;
 	return (backProj_calc);
+}
+
+glm::mat4 Camera::getMV(glm::vec3 postion, glm::vec3 scale, glm::mat4 rotationZ)
+{
+	glm::vec3 backObjPosition = postion;
+	glm::mat4 backTranslationMatrix = glm::translate(glm::mat4(), backObjPosition);
+	glm::vec3 objscaleBack = scale;
+	glm::mat4 scaleMatrixBack = glm::scale(glm::mat4(), objscaleBack);
+	glm::mat4 backModel = backTranslationMatrix * rotationZ * scaleMatrixBack;
+	glm::mat4 backProj_calc =  view * backModel;
+	return (backProj_calc);
+}
+
+glm::mat4 Camera::getVP()
+{
+	return proj * view;
 }
 
 

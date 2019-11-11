@@ -24,11 +24,15 @@ public:
 	void SwitchMode(MODE _mode, glm::vec3 _target, glm::vec3 _camPos, glm::vec3 _lookDirFromFollow, GLfloat _radius, GLfloat _height);
 
 	glm::mat4 getMVP(glm::vec3 postion, glm::vec3 scale, glm::mat4 rotationZ);
+	glm::mat4 getMV(glm::vec3 postion, glm::vec3 scale, glm::mat4 rotationZ);
+	glm::mat4 getVP();
 
 	glm::vec4 camStartPos = glm::vec4(-5, 3, 0, 1);
 	glm::vec3 camPos;
 	glm::vec3 camLookDir;
 	glm::vec3 camUpDir;
+	glm::vec3 camFrontDir;
+	glm::vec3 camRightDir;
 
 	glm::mat4 rotMat;
 	glm::vec4 newPos;
