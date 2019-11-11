@@ -213,5 +213,9 @@ glm::mat4 Camera::getVP()
 	return proj * view;
 }
 
+glm::mat4 Camera::getVP()
+{
+	return proj * view;
+}
 
 
