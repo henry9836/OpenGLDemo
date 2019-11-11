@@ -348,10 +348,10 @@ public:
 	float random(float x, float y) {
 
 		//int n = x + y * 57;
-		int n = x + y * randomNum;
+		int n = (int)x + (int)y * randomNum;
 		n = (n << 13) ^ n; 
 		int t = (n * (n * n * 15731 + 789221) + 1376312589) & 0x7fffffff; 
-		return 1.0 - double(t) * 0.931322574615478515625e-9;
+		return (float)(1.0 - double(t) * 0.931322574615478515625e-9);
 	}
 
 	//Interpolate point
@@ -379,10 +379,10 @@ public:
 		float fractional_Y = y - int(y);
 
 		//smooths 
-		float v1 = smoothNoise(int(x), int(y));
-		float v2 = smoothNoise(int(x) + 1, int(y));
-		float v3 = smoothNoise(int(x), int(y) + 1);
-		float v4 = smoothNoise(int(x) + 1, int(y) + 1);
+		float v1 = (float)(smoothNoise(float(x), float(y)));
+		float v2 = (float)(smoothNoise(float(x) + 1, float(y)));
+		float v3 = (float)(smoothNoise(float(x), float(y) + 1));
+		float v4 = (float)(smoothNoise(float(x) + 1, float(y) + 1));
 
 		// interpolates 
 		float i1 = interpolate(v1, v2, fractional_X); 
@@ -398,7 +398,7 @@ public:
 		float total = 0.0f;
 
 		for (int i = 0; i < octaves - 1; i++) {
-			float frequency = pow(2, i) / zoom; 
+			float frequency = (float)(pow(2, i) / zoom); 
 			float amplitude = pow(persistence, i);
 			total += noise(x * frequency, y * frequency) * amplitude;
 		} 
@@ -529,7 +529,7 @@ public:
 
 			Console_OutputLog(to_wstring("Using Seed: " + to_string(this->randomNum)), LOGINFO);
 
-			totalSize = _size.x * _size.y;
+			totalSize = (int)(_size.x * _size.y);
 			this->rawData.resize(totalSize);
 			//this->heightInfo.resize(totalSize * 2);
 			//For each y
@@ -539,7 +539,7 @@ public:
 				for (size_t x = 0; x < _size.x; x++)
 				{
 					//Generate Perlin Noise On Point
-					this->heightInfo.push_back(totalNoisePerPoint(x, y));
+					this->heightInfo.push_back(totalNoisePerPoint((float)x, (float)y));
 				}
 			}
 			//Make a fake image size

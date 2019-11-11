@@ -16,7 +16,7 @@
 #include "Camera.h"
 
 static float randFloat() {
-	float r = (float)rand() / (double)RAND_MAX;
+	float r = (float)((float)rand() / (double)RAND_MAX);
 	return r;
 }
 
@@ -52,7 +52,7 @@ public:
 			this->velocity = glm::vec3(0.25 * cos(this->id * .0167) + 0.25f * randFloat() - 0.125f, 1.5f + 0.25f * randFloat() - 0.125f, 0.25 * sin(this->id * .0167) + 0.25f * randFloat() - 0.125f);
 			//Reset timer and set random lifetime
 			this->elapsedTime = 0;
-			this->lifeTime = randFloat() + 0.125;
+			this->lifeTime = (float)(randFloat() + 0.125f);
 		}
 		else {
 			//Update pos of particle
@@ -83,7 +83,7 @@ public:
 	ParticleSystem(glm::vec3 originPos, Camera* _cam, string texFileName, int numofParticles, string _name, float _speed, float _size) {
 		Console_OutputLog(to_wstring("Creating Particle System: " + _name), LOGINFO);
 		this->name = _name;
-		this->numParticles = numofParticles;
+		this->numParticles = (float)numofParticles;
 		this->camera = _cam;
 		this->size = _size;
 

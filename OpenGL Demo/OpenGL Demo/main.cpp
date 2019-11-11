@@ -315,7 +315,7 @@ int main(int argc, char** argv) {
 	
 	/*try {*/
 		
-		srand(time(NULL));
+		srand((unsigned int)time(NULL));
 		
 		Console_Initalize(); //Show Console Controller Banner
 
