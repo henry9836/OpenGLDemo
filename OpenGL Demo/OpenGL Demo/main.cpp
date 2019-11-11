@@ -265,7 +265,7 @@ void Render() {
 			firstLoop = false;
 		}
 		mainText.Render();
-		mainTextBack.Render();
+		//mainTextBack.Render();
 		
 		if (m_Game.caminManual) {
 			camControlText.Render();
