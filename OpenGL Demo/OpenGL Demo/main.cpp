@@ -29,6 +29,7 @@
 #include "3D.h"
 #include "AI.h"
 #include "FrameBuffers.h"
+#include "Particles.h"
 
 using namespace std;
 
@@ -47,6 +48,7 @@ LoadTexture textureLoader;
 Terrain* terrian;
 GeoShape* geoShape;
 FrameBuffer* frameBuffer;
+ParticleSystem* fireParticle;
 
 //3D Objects
 Simple3DObject cubeModel;
@@ -277,6 +279,9 @@ void Render() {
 		//mCam.SwitchMode(mCam.FOLLOW_ORBIT, tankModel->position, glm::vec3(-15.0f, 5.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), 5.0f, 5.0f);
 		mCam.SwitchMode(mCam.FOLLOW, glm::vec3(tankModel->position.x - 30.0f, tankModel->position.y, tankModel->position.z), glm::vec3(-5.0f, 5.0f, 1.0f), glm::vec3(50.0f, 0.0f, 0.0f), 1.0f, 50.0f);
 		//mCam.camPos = glm::vec3(tankModel->position.x - 10.0f, tankModel->position.y + 5.0f, tankModel->position.z + 1.0f);
+
+		fireParticle->Render(deltaTime);
+
 		if (m_Game.POST) {
 			frameBuffer->Render(currentTime, m_Game.POSTG);
 		}
@@ -505,6 +510,13 @@ int main(int argc, char** argv) {
 		geoShape = new GeoShape;
 		geoShape->program = ShaderLoader::CreateProgram("Resources/Shaders/GeometryShader.vs", "Resources/Shaders/GeometryShader.fs", "Resources/Shaders/GeometryShader.gs");
 		
+		/*
+			====================
+			[ PARTICLE SYSTEMS ]
+			====================
+		*/
+		fireParticle = new ParticleSystem(tankModel->position, &mCam, "Resources/Textures/box.png", 100, "Fire Particles");
+
 		/*
 			================
 			[ FRAME BUFFER ]

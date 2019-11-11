@@ -49,6 +49,10 @@ void Camera::Tick(ScreenInfo m_Screen, float deltaTime)
 					camPos.y = camFollowTar.y + height;
 					camPos.z = camFollowTar.z;
 				}
+				glm::vec3 temp = {0.0f, 1.0f, 0.0f};
+				camFrontDir = glm::normalize(camPos - camTar);
+				camRightDir = glm::normalize(glm::cross(temp, camFollowTar));
+				camUpDir = glm::normalize(glm::cross(camLookDir, camRightDir)); //makes camera act strange when moving from left to right need to fix 
 			}
 		}
 		view = glm::lookAt(camPos, camTar, camUpDir);
@@ -61,7 +65,6 @@ void Camera::Tick(ScreenInfo m_Screen, float deltaTime)
 			proj = glm::perspective(FOV / 2, (float)m_Screen.SCR_WIDTH / (float)m_Screen.SCR_HEIGHT, minRenderDistance, maxRenderDistance);
 		}
 	}
-
 }
 
 void Camera::SwitchMode(MODE _mode, glm::vec3 _target, glm::vec3 _camPos, glm::vec3 _lookDirFromFollow, GLfloat _radius, GLfloat _height)
@@ -203,6 +206,22 @@ glm::mat4 Camera::getMVP(glm::vec3 postion, glm::vec3 scale, glm::mat4 rotationZ
 	glm::mat4 backModel = backTranslationMatrix * rotationZ * scaleMatrixBack;
 	glm::mat4 backProj_calc = proj * view * backModel;
 	return (backProj_calc);
+}
+
+glm::mat4 Camera::getMV(glm::vec3 postion, glm::vec3 scale, glm::mat4 rotationZ)
+{
+	glm::vec3 backObjPosition = postion;
+	glm::mat4 backTranslationMatrix = glm::translate(glm::mat4(), backObjPosition);
+	glm::vec3 objscaleBack = scale;
+	glm::mat4 scaleMatrixBack = glm::scale(glm::mat4(), objscaleBack);
+	glm::mat4 backModel = backTranslationMatrix * rotationZ * scaleMatrixBack;
+	glm::mat4 backProj_calc =  view * backModel;
+	return (backProj_calc);
+}
+
+glm::mat4 Camera::getVP()
+{
+	return proj * view;
 }
 
 

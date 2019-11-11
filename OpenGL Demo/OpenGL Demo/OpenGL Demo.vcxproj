@@ -172,6 +172,7 @@
     <ClInclude Include="Model.h" />
     <ClInclude Include="ModelMesh.h" />
     <ClInclude Include="ObjectManager.h" />
+    <ClInclude Include="Particles.h" />
     <ClInclude Include="ScreenInfo.h" />
     <ClInclude Include="ShaderLoader.h" />
     <ClInclude Include="Sprite.h" />
