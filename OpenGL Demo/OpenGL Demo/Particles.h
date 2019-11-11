@@ -116,7 +116,6 @@ public:
 
 		//MV and cam look dir is guessed
 
-		//glm::mat4 viewMat = camera->getMV(this->position, this->scale, this->rotation);
 		glm::mat4 viewMat = camera->getVP();
 		glm::vec3 vQuad1, vQuad2;
 		glm::vec3 vView = glm::normalize(camera->camFrontDir);

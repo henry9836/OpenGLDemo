@@ -527,7 +527,7 @@ public:
 
 		if (randomGen) {
 
-			Console_OutputLog(to_wstring("Using Seed: " + this->randomNum), LOGINFO);
+			Console_OutputLog(to_wstring("Using Seed: " + to_string(this->randomNum)), LOGINFO);
 
 			totalSize = _size.x * _size.y;
 			this->rawData.resize(totalSize);
