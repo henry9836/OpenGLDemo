@@ -526,6 +526,9 @@ public:
 		int totalSize = 0;
 
 		if (randomGen) {
+
+			Console_OutputLog(to_wstring("Using Seed: " + to_string(this->randomNum)), LOGINFO);
+
 			totalSize = _size.x * _size.y;
 			this->rawData.resize(totalSize);
 			//this->heightInfo.resize(totalSize * 2);
@@ -536,7 +539,6 @@ public:
 				for (size_t x = 0; x < _size.x; x++)
 				{
 					//Generate Perlin Noise On Point
-					//this->rawData.push_back(totalNoisePerPoint(x, y));
 					this->heightInfo.push_back(totalNoisePerPoint(x, y));
 				}
 			}
