@@ -501,7 +501,8 @@ int main(int argc, char** argv) {
 		terrian = new Terrain;
 		//terrian->Initalise(&mCam, "mountain.raw", "Terrian", false, glm::vec2(0,0), 0.5);
 		terrian->Initalise(&mCam, "mountain.raw", "Terrian", true, glm::vec2(500, 500), 10);
-
+		float floorPos = terrian->position.y + terrian->getHeight(tankModel->position.x, tankModel->position.z);
+		tankModel->position = glm::vec3(tankModel->position.x, floorPos, tankModel->position.z);
 		/*
 			=============
 			[ GEO SHAPE ]
@@ -515,7 +516,7 @@ int main(int argc, char** argv) {
 			[ PARTICLE SYSTEMS ]
 			====================
 		*/
-		fireParticle = new ParticleSystem(tankModel->position, &mCam, "Resources/Textures/box.png", 100, "Fire Particles");
+		fireParticle = new ParticleSystem(tankModel->position, &mCam, "Resources/Textures/fire.png", 100, "Fire Particles", 0.0001f, 1.0f);
 
 		/*
 			================
