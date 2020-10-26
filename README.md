@@ -1,2 +1,2 @@
 # OpenGLDemo
-Overview demo of my current openGL understanding
+Overview demo of my current OpenGL understanding
